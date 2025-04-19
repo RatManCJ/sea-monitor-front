@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = '';
+const BASE_URL = 'http://localhost:8080/water';
 
 const instance = axios.create({
     baseURL: BASE_URL,
@@ -24,7 +24,6 @@ const createRequest = (instance, preUrl) => {
 export const defaultRequest = createRequest(instance, '');
 
 // 创建一个特定于某个服务的请求实例
-export const requestFixToken = createRequest(instance, '/service-feedback/geek-message-board');
 
 // 创建一个新的axios实例用于外部请求
 const externalInstance = axios.create({

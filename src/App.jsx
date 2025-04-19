@@ -1,162 +1,233 @@
-import { Viewer, Ion, ScreenSpaceEventHandler, Cartographic, ScreenSpaceEventType, Math as cesiumMath, ImageryLayer, WebMapTileServiceImageryProvider, createWorldTerrainAsync } from 'cesium';
-import { useEffect, useState } from "react";
-
-import { Upload, Button, message, ConfigProvider, theme } from 'antd';
+import {
+    Viewer,
+    Ion,
+    ScreenSpaceEventHandler,
+    Cartographic,
+    ScreenSpaceEventType,
+    Math as cesiumMath,
+    ImageryLayer,
+    WebMapTileServiceImageryProvider,
+    createWorldTerrainAsync
+} from 'cesium';
+import {useEffect, useState} from "react";
+import {Upload, Button, message, ConfigProvider, theme, Layout} from 'antd';
 import styles from './App.module.scss';
 import * as Cesium from "cesium";
+import TopBar from "@components/topBar/TopBar.jsx";
+import SideBar from "@components/sideBar/SideBar.jsx";
+import DateRender from '@components/render/DateRender.jsx';
 
+import CesiumNavigation from "cesium-navigation-es6";
+
+// 配置导航控件选项（JavaScript对象格式）
+const navigationOptions = {
+    // 启用指南针
+    enableCompass: true,
+    // 启用缩放控件
+    enableZoomControls: true,
+    // 启用距离图例
+    enableDistanceLegend: true,
+    // 启用罗盘环
+    enableCompassRing: true,
+
+    // 自定义选项示例
+    defaultResetView: {
+        orientation: {
+            heading: Cesium.Math.toRadians(0),
+            pitch: Cesium.Math.toRadians(-90),
+            roll: 0.0
+        }
+    },
+    // 更多可用配置...
+};
 const App = () => {
     const [viewerState, setViewer] = useState(null);
-    const [isDarkTheme, setIsDarkTheme] = useState(() => {
-        const savedTheme = localStorage.getItem('theme');
-        return savedTheme ? savedTheme === 'dark' : true;
+    const [selectedTime, setSelectedTime] = useState('2017-05-01');
+    const [positionInfo, setPositionInfo] = useState({
+        longitude: '--',
+        latitude: '--',
+        height: '--'
     });
 
-    const [currentLanguage, setCurrentLanguage] = useState(() => {
-        const savedLang = localStorage.getItem('language');
-        return savedLang || 'zh';
-    });
-
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const checkIfMobile = () => {
-            setIsMobile(window.innerWidth < 1010);
-        };
-
-        checkIfMobile();
-        window.addEventListener('resize', checkIfMobile);
-
-        return () => window.removeEventListener('resize', checkIfMobile);
-    }, []);
-
-    const changeLanguage = (lng) => {
-        const newLang = lng || (currentLanguage === 'en' ? 'zh' : 'en');
-        setCurrentLanguage(newLang);
-        localStorage.setItem('language', newLang);
+    // const createViewer = () => {
+    //     const viewer = new Viewer("cesiumContainer", {
+    //         contextOptions: {webgl: {powerPreference: 'high-performance'}},
+    //
+    //         //是否显示 信息窗口
+    //         infoBox: false,
+    //         //是否显示 搜索框
+    //         geocoder: true,
+    //         //是否显示 home
+    //         homeButton: true,
+    //         //是否显示 2d->3d
+    //         sceneModePicker: true,
+    //         //是否显示 图层选择器
+    //         baseLayerPicker: false,
+    //         //是否显示 帮助按钮
+    //         navigationHelpButton: false,
+    //         //-------------------------------------底部的
+    //         //是否显示 播放
+    //         animation: false,
+    //         //是否显示 时间轴
+    //         timeline: false,
+    //         //是否显示 全屏
+    //         fullscreenButton: false,
+    //         shouldAnimate: true,
+    //
+    //         // baseLayer: new ImageryLayer(
+    //         //   new WebMapTileServiceImageryProvider({
+    //         //       url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=ea280c007d7d86ab4698216ac22c5b7f',
+    //         //       layer: 'tdtBasicLayer',
+    //         //       style: 'default',
+    //         //       format: 'tiles',
+    //         //       tileMatrixSetID: 'w',
+    //         //       subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+    //         //       maximumLevel: 18,
+    //         //       credit: new Cesium.Credit('天地图')
+    //         //   }),
+    //         //   {}
+    //         // ),
+    //     });
+    //
+    //     // viewer.terrainProvider = createWorldTerrainAsync({
+    //     //     requestVertexNormals: true, //开启地形光照
+    //     //     // requestWaterMask: true, // 开启水面波纹
+    //     // });
+    //
+    //     //抗锯齿
+    //     viewer.scene.postProcessStages.fxaa.enabled = true;
+    //
+    //     // 去除logo
+    //     const logo = viewer.cesiumWidget.creditContainer
+    //     logo.style.display = "none";
+    //     // 显示帧率
+    //     // viewer.scene.debugShowFramesPerSecond = true;
+    //     // viewer.scene.globe.depthTestAgainstTerrain = true;
+    //
+    //     // 添加相机变化监听
+    //     viewer.scene.camera.changed.addEventListener(() => {
+    //         updateCameraPosition(viewer);
+    //     });
+    //
+    //     // 直接设置相机视角
+    //     viewer.camera.setView({
+    //         destination: Cesium.Cartesian3.fromDegrees(102.548808, 29.563009, 19910652.65),
+    //         orientation: {
+    //             // 指向
+    //             heading: 6.283185307179581,
+    //             // 视角
+    //             pitch: -1.5688168484696687,
+    //             roll: 0.0
+    //         }
+    //     });
+    //
+    //     // 立即触发一次初始位置更新
+    //     updateCameraPosition(viewer);
+    //
+    //     setViewer(viewer);
+    //     const navigationControl = new CesiumNavigation(viewer, navigationOptions);
+    //
+    //     const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
+    //     handler.setInputAction((e) => {
+    //         const clickPosition = viewer.scene.camera.pickEllipsoid(e.position);
+    //         const randiansPos = Cartographic.fromCartesian(clickPosition);
+    //         console.log(
+    //             "经度：" +
+    //             cesiumMath.toDegrees(randiansPos.longitude) +
+    //             ", 纬度：" +
+    //             cesiumMath.toDegrees(randiansPos.latitude)
+    //         );
+    //     }, ScreenSpaceEventType.LEFT_CLICK);
+    //
+    // }
+    //
+    //
+    // useEffect(() => {
+    //     // 初始化Cesium
+    //     Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjdlNTE2Mi05MjE4LTQ1OGMtOGQ1ZS0wODdiNzI5YWQxYzYiLCJpZCI6MjI5NDYzLCJpYXQiOjE3MjEzOTA3OTR9.Vyt-kvvNogPDPw4y74AMwsJDHUUBuhHtwyGDuCBDtSw"
+    //     createViewer();
+    // }, []);
+    //
+    // // 添加坐标更新函数
+    // const updateCameraPosition = (viewer) => {
+    //     const camera = viewer.scene.camera;
+    //     const cartesian = camera.position;
+    //
+    //     // 转换坐标系
+    //     const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+    //     let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
+    //     const latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
+    //     const height = cartographic.height.toFixed(2);
+    //
+    //     if (longitude > 180) {
+    //         longitude = ((longitude + 180) % 360) - 180;
+    //     } else if (longitude < -180) {
+    //         longitude = ((longitude - 180) % 360) + 180;
+    //     }
+    //
+    //     setPositionInfo({
+    //         longitude,
+    //         latitude,
+    //         height: height + '米'
+    //     });
+    // };
+    //
+    // 定义时间选择回调函数
+    const handleTimeChange = (time) => {
+        setSelectedTime(time)
+        console.log('选中的时间:', time);
     };
+    const {defaultAlgorithm, darkAlgorithm} = theme;
 
-    const handleThemeChange = (checked) => {
-        setIsDarkTheme(checked);
-        localStorage.setItem('theme', checked ? 'dark' : 'light');
-    };
-
-
-
-    const createViewer = async () => {
-        const viewer = new Viewer("cesiumContainer", {
-            contextOptions: { webgl: { powerPreference: 'high-performance' } },
-
-            //是否显示 信息窗口
-            infoBox: false,
-            //是否显示 搜索框
-            geocoder: false,
-            //是否显示 home
-            // homeButton: false,
-            //是否显示 2d->3d
-            sceneModePicker: false,
-            //是否显示 图层选择器
-            baseLayerPicker: false,
-            //是否显示 帮助按钮
-            navigationHelpButton: false,
-            //-------------------------------------底部的
-            //是否显示 播放
-            animation: false,
-            //是否显示 时间轴
-            timeline: false,
-            //是否显示 全屏
-            fullscreenButton: false,
-            shouldAnimate: true,
-
-            // baseLayer: new ImageryLayer(
-            //   new WebMapTileServiceImageryProvider({
-            //       url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=ea280c007d7d86ab4698216ac22c5b7f',
-            //       layer: 'tdtBasicLayer',
-            //       style: 'default',
-            //       format: 'tiles',
-            //       tileMatrixSetID: 'w',
-            //       subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
-            //       maximumLevel: 18,
-            //       credit: new Cesium.Credit('天地图')
-            //   }),
-            //   {}
-            // ),
-        });
-
-        viewer.terrainProvider = await createWorldTerrainAsync({
-            requestVertexNormals: true, //开启地形光照
-            // requestWaterMask: true, // 开启水面波纹
-        });
-
-        //抗锯齿
-        viewer.scene.postProcessStages.fxaa.enabled = true;
-
-        // 去除logo
-        const logo = viewer.cesiumWidget.creditContainer
-        logo.style.display = "none";
-        // 显示帧率
-        viewer.scene.debugShowFramesPerSecond = true;
-        viewer.scene.globe.depthTestAgainstTerrain = true;
-
-        // 直接设置相机视角
-        viewer.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(106.550_464, 29.563_009, 30000000),
-            orientation: {
-                // 指向
-                heading: 6.283185307179581,
-                // 视角
-                pitch: -1.5688168484696687,
-                roll: 0.0
-            }
-        });
-
-
-        setViewer(viewer);
-
-        const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
-        handler.setInputAction((e) => {
-            const clickPosition = viewer.scene.camera.pickEllipsoid(e.position);
-            const randiansPos = Cartographic.fromCartesian(clickPosition);
-            console.log(
-                "经度：" +
-                cesiumMath.toDegrees(randiansPos.longitude) +
-                ", 纬度：" +
-                cesiumMath.toDegrees(randiansPos.latitude)
-            );
-        }, ScreenSpaceEventType.LEFT_CLICK);
-
-    }
-
-
-    useEffect(() => {
-        // 设置初始主题
-        document.documentElement.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-
-        // 初始化Cesium
-        Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjdlNTE2Mi05MjE4LTQ1OGMtOGQ1ZS0wODdiNzI5YWQxYzYiLCJpZCI6MjI5NDYzLCJpYXQiOjE3MjEzOTA3OTR9.Vyt-kvvNogPDPw4y74AMwsJDHUUBuhHtwyGDuCBDtSw"
-        createViewer();
-    }, []);
-
-    useEffect(() => {
-        // 主题变化时更新data-theme属性
-        document.documentElement.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-    }, [isDarkTheme]);
-
-    const currentTheme = {
-        algorithm: isDarkTheme ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: {
-            colorBgBase: isDarkTheme ? 'rgba(31,31,31, 0.5)' : 'rgba(224,224,224, 0.5)',
-            colorTextBase: isDarkTheme ? 'rgba(224,224,224)' : 'rgba(31,31,31)',
-        },
+    // 定义自定义 token
+    const token = {
+        colorBgContainer: 'rgba(122,245,83,0.1)', // 设置容器背景色，透明度为 10%
+        borderRadiusLG: 12, // 设置大圆角
+        colorPrimary: '#1677ff', // 设置主色调
+        fontSize: 14, // 设置默认字体大小
+        colorTextBase: '#4d1b1b', // 设置字体颜色为白色
     };
 
     return (
-        <ConfigProvider theme={currentTheme}>
-            <div className={styles.visualizationContainer}>
-                <div id="cesiumContainer" className={styles.cesiumContainer} />
-            </div>
-        </ConfigProvider>
+        <>
+
+            <ConfigProvider
+                theme={{
+                    algorithm: darkAlgorithm, // 使用默认主题算法
+                    token: token, // 应用自定义 token
+                }}>
+
+                {/* 顶部菜单栏*/}
+                <TopBar onTimeChange={handleTimeChange}/>
+                {/* 左侧菜单栏*/}
+                <SideBar/>
+                {/*渲染图表*/}
+                <DateRender
+                    selectedTime={selectedTime}
+                    viewer={viewerState}
+                />
+                {/* 坐标显示面板 */}
+                <div className={styles.positionPanel}>
+                    <div className={styles.positionItem}>
+                        <span className={styles.positionLabel}>经度：</span>
+                        <span className={styles.positionValue}>{positionInfo.longitude}</span>
+                    </div>
+                    <div className={styles.positionItem}>
+                        <span className={styles.positionLabel}>纬度：</span>
+                        <span className={styles.positionValue}>{positionInfo.latitude}</span>
+                    </div>
+                    <div className={styles.positionItem}>
+                        <span className={styles.positionLabel}>高度：</span>
+                        <span className={styles.positionValue}>{positionInfo.height}</span>
+                    </div>
+                </div>
+                <div className={styles.visualizationContainer}>
+                {/*    <div id="cesiumContainer" className={styles.cesiumContainer}/>*/}
+                </div>
+            </ConfigProvider>
+        </>
     );
+
 }
 
 export default App;
