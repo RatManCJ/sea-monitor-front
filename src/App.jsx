@@ -182,18 +182,18 @@ const App = () => {
 
     // 定义自定义 token
     const token = {
-        colorBgContainer: 'rgba(122,245,83,0.02)', // 设置容器背景色，透明度为 10%
+        colorBgContainer: 'rgba(122,245,83,0.1)', // 设置容器背景色，透明度为 10%
         borderRadiusLG: 12, // 设置大圆角
         colorPrimary: '#1677ff', // 设置主色调
         fontSize: 14, // 设置默认字体大小
-        colorTextBase: 'rgba(173,173,173,0.1)', // 设置字体颜色为白色
+        colorTextBase: 'rgb(255,255,255)', // 设置字体颜色为白色
     };
 
     return (
         <>
             <ConfigProvider
                 theme={{
-                    algorithm: darkAlgorithm, // 使用黑色主题算法
+                    algorithm: defaultAlgorithm, // 使用黑色主题算法
                     token: token, // 应用自定义 token
                 }}>
 
@@ -206,9 +206,9 @@ const App = () => {
                     selectedTime={selectedTime}
                     viewer={viewerState}
                 />
-                <div className={styles.visualizationContainer}>
-                    <div id="cesiumContainer" className={styles.cesiumContainer}/>
-                </div>
+                {/*<div className={styles.visualizationContainer}>*/}
+                {/*    <div id="cesiumContainer" className={styles.cesiumContainer}/>*/}
+                {/*</div>*/}
                 <PositionAndLegend positionInfo={positionInfo}/>
             </ConfigProvider >
         </>

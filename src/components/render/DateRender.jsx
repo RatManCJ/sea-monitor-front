@@ -1,53 +1,159 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import {Card, Space, Input, message, Button, Drawer} from 'antd';
+import {
+    Card,
+    Space,
+    Input,
+    message,
+    Button,
+    Drawer,
+    Select,
+} from 'antd';
 import queryDataByInfo from './data/queryDataByInfo.js';
 import renderPoints from './data/renderPoints.js';
+import { Column } from '@ant-design/plots';
 
 const DateRender = ({ selectedTime, viewer }) => {
-    const [siteQuery, setSiteQuery] = useState(''); // 用于存储用户输入的点位编号
-    const [siteInfo, setSiteInfo] = useState(null); // 用于存储查询到的点位信息
-    const [error, setError] = useState(null); // 错误提示信息
-    const [drawerVisible, setDrawerVisible] = useState(false); // 控制抽屉的显示状态
+    const [siteQuery, setSiteQuery] = useState(''); // 用户输入的点位编号
+    const [siteInfo, setSiteInfo] = useState(null); // 查询到的点位信息
+    const [drawerVisible, setDrawerVisible] = useState(false); // 控制抽屉显示状态
     const [isClicked, setIsClicked] = useState(false);
+    const [selectedMetric, setSelectedMetric] = useState('pH'); // 当前选中的指标
 
-    const handleClick = () => {
-        setIsClicked(true); // 触发粒子效果
-        setTimeout(() => setIsClicked(false), 1000); // 1秒后恢复默认状态
-        console.log('Button clicked!');
+    // 模拟不同指标的数据
+    const metricData = {
+        pH: [
+            { type: '17-05', value: 8.13 },
+            { type: '17-08', value: 8.10 },
+            { type: '17-10', value: 8.11 },
+            { type: '18-05', value: 8.17 },
+            { type: '18-08', value: 8.15 },
+            { type: '18-10', value: 8.11 },
+            { type: '19-05', value: 8.09 },
+            { type: '19-08', value: 8.05 },
+            { type: '19-11', value: 8.05 },
+        ],
+        溶解氧: [
+            { type: 'A', value: 5.0 },
+            { type: 'B', value: 6.2 },
+            { type: 'C', value: 4.8 },
+            { type: 'D', value: 5.5 },
+            { type: 'E', value: 6.0 },
+        ],
+        化学需氧量: [
+            { type: 'A', value: 120 },
+            { type: 'B', value: 200 },
+            { type: 'C', value: 150 },
+            { type: 'D', value: 80 },
+            { type: 'E', value: 70 },
+        ],
+        无机氮: [
+            { type: 'A', value: 30 },
+            { type: 'B', value: 40 },
+            { type: 'C', value: 25 },
+            { type: 'D', value: 15 },
+            { type: 'E', value: 20 },
+        ],
+        活性磷酸盐: [
+            { type: 'A', value: 5 },
+            { type: 'B', value: 7 },
+            { type: 'C', value: 4 },
+            { type: 'D', value: 3 },
+            { type: 'E', value: 6 },
+        ],
+        石油类: [
+            { type: 'A', value: 10 },
+            { type: 'B', value: 15 },
+            { type: 'C', value: 8 },
+            { type: 'D', value: 5 },
+            { type: 'E', value: 12 },
+        ],
     };
 
-    // 调用渲染函数
-    // renderPoints(selectedTime, viewer);
-
-    // 查询点位信息
+    // 处理查询点位信息
     const handleSearch = async () => {
         try {
-            // 调用异步查询函数
             const data = await queryDataByInfo(siteQuery, viewer);
 
-            console.log('查询结果:', data);
-            // 如果返回数据为空
             if (!data || data.length === 0) {
                 message.error("未找到相关点位信息");
-                setSiteInfo(null); // 清空查询结果
+                setSiteInfo(null);
                 return;
             }
 
-            // 假设只显示第一个点位的信息
             const foundSite = data[0];
             setSiteInfo(foundSite);
-
-            // 显示成功消息
             message.success(`查询成功：点位编号 ${foundSite.site}`);
         } catch (error) {
             console.error("查询点位信息时发生错误:", error);
             message.error("查询点位信息失败，请稍后再试");
-            setSiteInfo(null); // 清空查询结果
+            setSiteInfo(null);
         }
     };
 
-// 卡件数据配置
+    // 页面加载时自动发送请求
+    useEffect(() => {
+        const defaultSiteQuery = 'H00JQ007'; // 默认点位编号
+        setSiteQuery(defaultSiteQuery); // 设置默认查询值
+        handleSearch(defaultSiteQuery); // 自动发送请求
+    }, []); // 空依赖数组确保只在组件挂载时执行一次
+
+    // 根据选中的指标获取当前数据
+    const currentChartData = metricData[selectedMetric];
+
+    // 柱状图配置
+    const barChartConfig = {
+        data: currentChartData,
+        xField: 'type',
+        yField: 'value',
+        columnWidthRatio: 0.6,
+        color: '#FF1493',
+        xAxis: {
+            label: {
+                style: {
+                    fill: '#ec9d9d', // X轴标签文字颜色为白色
+                },
+            },
+        },
+        yAxis: {
+            min: 6.50, // 设置y轴起始值为6.5
+            max: 9.00, // 设置y轴最大值（根据数据调整）
+            tickInterval: 0.05, // 设置y轴刻度间隔为0.05
+            label: {
+                style: {
+                    fill: '#ffffff', // Y轴标签文字颜色为白色
+                },
+            },
+        },
+        tooltip: {
+            domStyles: {
+                'g2-tooltip': {
+                    color: 'blue', // 提示框文字颜色为白色
+                }
+            }
+        },
+        slider: {
+            defaultCfg: {
+                backgroundStyle: {
+                    stroke: 'rgba(255, 255, 255, 0.5)', // 滑块背景颜色较淡
+                },
+                foregroundStyle: {
+                    stroke: 'white', // 滑块前景色（即选中部分的颜色）
+                },
+                handlerStyle: {
+                    fill: 'white', // 滑块手柄颜色
+                    stroke: 'rgba(122,245,83,0.1)', // 滑块手柄边框颜色
+                },
+            },
+        },
+        theme: {
+            styleSheet: {
+                fontFamily: 'Arial, sans-serif', // 设置字体
+                backgroundColor: 'rgba(243,235,235,0.9)', // 背景颜色
+            }
+        }
+    };
+    // 卡件数据配置
     const cardItems = [
         {
             title: '点位查询',
@@ -55,14 +161,14 @@ const DateRender = ({ selectedTime, viewer }) => {
             content: (
                 <div>
                     <Input
-                        placeholder="请输入点位编号（如 H00JQ007）"
+                        placeholder="H00JQ007"
                         value={siteQuery}
                         onChange={(e) => setSiteQuery(e.target.value)}
                         onPressEnter={handleSearch}
                         style={{
                             marginBottom: 8,
-                            color: 'white', // 输入框文字颜色为白色
-                            background: 'rgba(255, 255, 255, 0.2)', // 输入框背景颜色
+                            color: 'white',
+                            background: 'rgba(255, 255, 255, 0.2)',
                             border: '1px solid rgba(255, 255, 255, 0.3)',
                         }}
                     />
@@ -71,19 +177,19 @@ const DateRender = ({ selectedTime, viewer }) => {
                         icon={<SearchOutlined />}
                         style={{
                             width: '100%',
-                            background: isClicked ? '#bfc7e5' : 'rgba(255, 255, 255, 0.1)', // 点击时背景颜色变化
+                            background: isClicked ? '#bfc7e5' : 'rgba(255, 255, 255, 0.1)',
                             borderColor: '#FF1493',
                             color: 'white',
-                            transition: 'background 0.3s ease, transform 0.2s ease', // 添加过渡动画
-                            transform: isClicked ? 'scale(0.95)' : 'scale(1)', // 点击时缩小按钮
+                            transition: 'background 0.3s ease, transform 0.2s ease',
+                            transform: isClicked ? 'scale(0.95)' : 'scale(1)',
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.background = '#FF1493'; // 鼠标进入时背景颜色变为粉色
-                            e.target.style.borderColor = '#FF1493'; // 边框颜色保持一致
+                            e.target.style.background = '#FF1493';
+                            e.target.style.borderColor = '#FF1493';
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.background = 'rgba(255, 255, 255, 0.1)'; // 鼠标离开时恢复默认背景颜色
-                            e.target.style.borderColor = '#FF1493'; // 边框颜色保持一致
+                            e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                            e.target.style.borderColor = '#FF1493';
                         }}
                         onClick={handleSearch}
                     >
@@ -99,6 +205,42 @@ const DateRender = ({ selectedTime, viewer }) => {
                 </div>
             ),
         },
+        {
+            title: '柱状图示例',
+            icon: null,
+            content: (
+                <div>
+                    {/* 下拉菜单 */}
+                    <Select
+                        defaultValue="pH"
+                        style={{
+                            width: '100%',
+                            marginBottom: 16,
+                            background: 'rgba(90,245,44,0.4)',
+                            color: 'pink',
+                            border: '1px solid rgba(122, 28, 123, 0.8)',
+                        }}
+                        dropdownStyle={{
+                            background: 'deepPink', // 下拉菜单背景颜色
+                            color: 'white', // 下拉菜单文字颜色
+                        }}
+                        onChange={(value) => setSelectedMetric(value)}
+                    >
+                        <Select.Option value="pH">pH</Select.Option>
+                        <Select.Option value="溶解氧">溶解氧</Select.Option>
+                        <Select.Option value="化学需氧量">化学需氧量</Select.Option>
+                        <Select.Option value="无机氮">无机氮</Select.Option>
+                        <Select.Option value="活性磷酸盐">活性磷酸盐</Select.Option>
+                        <Select.Option value="石油类">石油类</Select.Option>
+                    </Select>
+
+                    {/* 柱状图 */}
+                    <div style={{ height: '300px' }}>
+                        <Column {...barChartConfig} />
+                    </div>
+                </div>
+            ),
+        },
     ];
 
     return (
@@ -108,8 +250,8 @@ const DateRender = ({ selectedTime, viewer }) => {
                 left: '260px',
                 bottom: '20px',
                 zIndex: 1000,
-                backgroundColor: 'rgba(0, 0, 0, 0.1)', // 使用与 SideBar 相同的背景颜色
-                backdropFilter: 'blur(1px)', // 背景模糊效果
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                backdropFilter: 'blur(1px)',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 padding: '16px',
@@ -120,7 +262,7 @@ const DateRender = ({ selectedTime, viewer }) => {
                 size="middle"
                 style={{
                     width: '100%',
-                    color: 'white', // 设置全局字体颜色为白色
+                    color: 'white',
                 }}
             >
                 {cardItems.map((item, index) => (
@@ -129,14 +271,14 @@ const DateRender = ({ selectedTime, viewer }) => {
                         title={item.title}
                         extra={item.icon}
                         headStyle={{
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.2)', // 标题底部边框颜色
-                            color: 'white', // 标题文字颜色
-                            background: 'rgba(0, 0, 0, 0.5)', // 标题背景颜色
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                            color: 'white',
+                            background: 'rgba(236,83,83,0.5)',
                         }}
                         bodyStyle={{
                             padding: '12px 16px',
-                            color: 'white', // 内容文字颜色
-                            background: 'rgba(0, 0, 0, 0.5)', // 内容背景颜色
+                            color: 'pink',
+                            background: 'rgba(122,245,83,0.4)',
                         }}
                         style={{
                             width: 300,
@@ -157,17 +299,17 @@ const DateRender = ({ selectedTime, viewer }) => {
             {/* 抽屉组件 */}
             <Drawer
                 title="点位信息"
-                placement="right" // 从右侧弹出
-                onClose={() => setDrawerVisible(false)} // 关闭抽屉
-                visible={drawerVisible} // 控制抽屉显示状态
-                width={300} // 抽屉宽度
+                placement="right"
+                onClose={() => setDrawerVisible(false)}
+                visible={drawerVisible}
+                width={300}
                 headerStyle={{
-                    background: 'rgba(0, 0, 0, 0.7)', // 抽屉标题背景颜色
-                    color: 'white', // 抽屉标题文字颜色
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
                 }}
                 bodyStyle={{
-                    background: 'rgba(0, 0, 0, 0.7)', // 抽屉内容背景颜色
-                    color: 'white', // 抽屉内容文字颜色
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
                 }}
             >
                 {siteInfo && (

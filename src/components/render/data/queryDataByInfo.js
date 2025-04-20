@@ -9,7 +9,7 @@ import {WaterQuality} from "@components/entity/WaterQuality.js";
  * @returns {Promise<Array>} - 返回点位数据数组（如果查询失败则返回空数组）
  */
 const queryDataByInfo = async (site, viewer) => {
-    if (!site || !viewer) {
+    if (!site) {
         console.error("点位编号或 Cesium Viewer 未提供");
         return [];
     }
@@ -96,9 +96,6 @@ const queryDataByInfo = async (site, viewer) => {
         } else {
             alert("未找到任何有效的点位信息");
         }
-
-        // 提示用户查询成功
-        alert(`已定位到点位 ${site}`);
 
         // 返回点位数据
         return points;
