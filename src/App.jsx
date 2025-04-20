@@ -206,9 +206,9 @@ const App = () => {
                     selectedTime={selectedTime}
                     viewer={viewerState}
                 />
-                {/*<div className={styles.visualizationContainer}>*/}
-                {/*    <div id="cesiumContainer" className={styles.cesiumContainer}/>*/}
-                {/*</div>*/}
+                <div className={styles.visualizationContainer}>
+                    <div id="cesiumContainer" className={styles.cesiumContainer}/>
+                </div>
                 <PositionAndLegend positionInfo={positionInfo}/>
             </ConfigProvider >
         </>
