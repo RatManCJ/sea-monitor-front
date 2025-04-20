@@ -5,5 +5,10 @@ export function getDataByTime(time) {
     return request.get('get-data-by-time', {
         time
     });
+}
 
+export function getDataBySiteInfo(site){
+    return request.get('get-data-by-site-info', {
+        site
+    });
 }

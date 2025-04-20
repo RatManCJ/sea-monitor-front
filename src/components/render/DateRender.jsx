@@ -1,183 +1,183 @@
-import React, {useEffect} from 'react';
-import {CommentOutlined, CustomerServiceOutlined, LikeOutlined} from '@ant-design/icons';
-import {Card, Space} from 'antd';
-import {getDataByTime} from '../../apis/sea-quality/index.js';
-import {WaterQuality} from "@components/entity/WaterQuality.js";
-import * as Cesium from "cesium";
+import React, { useState } from 'react';
+import { SearchOutlined } from '@ant-design/icons';
+import {Card, Space, Input, message, Button, Drawer} from 'antd';
+import queryDataByInfo from './data/queryDataByInfo.js';
+import renderPoints from './data/renderPoints.js';
 
-// // 热力图配置
-// const HEATMAP_CONFIG = {
-//     radius: 40,
-//     maxOpacity: 0.7,
-//     gradient: {
-//         '0.4': 'blue',
-//         '0.6': 'cyan',
-//         '0.7': 'lime',
-//         '0.8': 'yellow',
-//         '1.0': 'red'
-//     }
-// };
-const DateRender = ({selectedTime, viewer}) => {
-    console.log(selectedTime)
+const DateRender = ({ selectedTime, viewer }) => {
+    const [siteQuery, setSiteQuery] = useState(''); // 用于存储用户输入的点位编号
+    const [siteInfo, setSiteInfo] = useState(null); // 用于存储查询到的点位信息
+    const [error, setError] = useState(null); // 错误提示信息
+    const [drawerVisible, setDrawerVisible] = useState(false); // 控制抽屉的显示状态
+    const [isClicked, setIsClicked] = useState(false);
 
-    const getData = async (selectedTime) => {
+    const handleClick = () => {
+        setIsClicked(true); // 触发粒子效果
+        setTimeout(() => setIsClicked(false), 1000); // 1秒后恢复默认状态
+        console.log('Button clicked!');
+    };
+
+    // 调用渲染函数
+    // renderPoints(selectedTime, viewer);
+
+    // 查询点位信息
+    const handleSearch = async () => {
         try {
-            console.log("Request time:", selectedTime);
-            const response = await getDataByTime(selectedTime + " 00:00:00");
+            // 调用异步查询函数
+            const data = await queryDataByInfo(siteQuery, viewer);
 
-            // 修改后 ✅
-            return response.data.map(item => new WaterQuality(
-                item.id,
-                item.sea,
-                item.province,
-                item.city,
-                item.site,
-                item.longitude,
-                item.latitude,
-                item.monitorMonth,
-                item.pH,
-                item.dissolvedOxygen,
-                item.chemicalOxygenDemand,
-                item.inorganicNitrogen,
-                item.activePhosphate,
-                item.petroleum,
-                item.waterQualityClassification
-            ));
+            console.log('查询结果:', data);
+            // 如果返回数据为空
+            if (!data || data.length === 0) {
+                message.error("未找到相关点位信息");
+                setSiteInfo(null); // 清空查询结果
+                return;
+            }
+
+            // 假设只显示第一个点位的信息
+            const foundSite = data[0];
+            setSiteInfo(foundSite);
+
+            // 显示成功消息
+            message.success(`查询成功：点位编号 ${foundSite.site}`);
         } catch (error) {
-            console.error('完整错误信息:', {
-                message: error.message,
-                response: error.response?.data
-            });
-            throw error;
-        }
-    }
-    useEffect(() => {
-        if (!viewer) {
-            console.error("Cesium Viewer 未初始化");
-            return;
-        }
-
-        // 获取数据并渲染到 Cesium
-        getData(selectedTime)
-            .then(data => {
-                console.log("成功获取数据:", data);
-
-                // 清空之前的实体
-                viewer.entities.removeAll();
-
-                // 遍历数据并创建 Cesium 点实体
-                data.forEach(item => {
-                    const longitude = parseFloat(item.longitude); // 经度
-                    const latitude = parseFloat(item.latitude); // 纬度
-
-                    if (isNaN(longitude) || isNaN(latitude)) {
-                        console.warn(`无效的经纬度数据: ${item.longitude}, ${item.latitude}`);
-                        return;
-                    }
-
-                    // 创建 Cesium 点实体
-                    viewer.entities.add({
-                        position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
-                        point: {
-                            pixelSize: 3, // 点的大小
-                            color: getColorByWaterQuality(item.waterQualityClassification), // 根据水质类别设置颜色
-                            outlineColor: Cesium.Color.BLACK,
-                            outlineWidth: 0.5
-                        },
-                    });
-                });
-
-                // 调整视角到数据点范围
-                if (data.length > 0) {
-                    const positions = data.map(item =>
-                        Cesium.Cartesian3.fromDegrees(parseFloat(item.longitude), parseFloat(item.latitude))
-                    );
-                    viewer.zoomTo(viewer.entities);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }, [selectedTime, viewer]);
-
-    // 根据水质类别返回颜色
-    const getColorByWaterQuality = (classification) => {
-        switch (classification) {
-            case '一类':
-                return Cesium.Color.GREEN;
-            case '二类':
-                return Cesium.Color.YELLOW;
-            case '三类':
-                return Cesium.Color.ORANGE;
-            case '四类':
-                return Cesium.Color.RED;
-            default:
-                return Cesium.Color.GRAY;
+            console.error("查询点位信息时发生错误:", error);
+            message.error("查询点位信息失败，请稍后再试");
+            setSiteInfo(null); // 清空查询结果
         }
     };
-    // 卡件数据配置
+
+// 卡件数据配置
     const cardItems = [
         {
-            title: '数据分析',
-            icon: <CommentOutlined/>,
-            content: [
-                '实时数据监测',
-                '历史数据查询',
-                '统计报表生成'
-            ]
+            title: '点位查询',
+            icon: <SearchOutlined style={{ color: 'white' }} />,
+            content: (
+                <div>
+                    <Input
+                        placeholder="请输入点位编号（如 H00JQ007）"
+                        value={siteQuery}
+                        onChange={(e) => setSiteQuery(e.target.value)}
+                        onPressEnter={handleSearch}
+                        style={{
+                            marginBottom: 8,
+                            color: 'white', // 输入框文字颜色为白色
+                            background: 'rgba(255, 255, 255, 0.2)', // 输入框背景颜色
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                        }}
+                    />
+                    <Button
+                        type="primary"
+                        icon={<SearchOutlined />}
+                        style={{
+                            width: '100%',
+                            background: isClicked ? '#bfc7e5' : 'rgba(255, 255, 255, 0.1)', // 点击时背景颜色变化
+                            borderColor: '#FF1493',
+                            color: 'white',
+                            transition: 'background 0.3s ease, transform 0.2s ease', // 添加过渡动画
+                            transform: isClicked ? 'scale(0.95)' : 'scale(1)', // 点击时缩小按钮
+                        }}
+                        onMouseEnter={(e) => {
+                            e.target.style.background = '#FF1493'; // 鼠标进入时背景颜色变为粉色
+                            e.target.style.borderColor = '#FF1493'; // 边框颜色保持一致
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.background = 'rgba(255, 255, 255, 0.1)'; // 鼠标离开时恢复默认背景颜色
+                            e.target.style.borderColor = '#FF1493'; // 边框颜色保持一致
+                        }}
+                        onClick={handleSearch}
+                    >
+                        Search
+                    </Button>
+                    {siteInfo && (
+                        <div style={{ marginTop: 8, color: 'white' }}>
+                            <p><strong>点位编号：</strong>{siteInfo.site}</p>
+                            <p><strong>经度：</strong>{siteInfo.longitude}</p>
+                            <p><strong>纬度：</strong>{siteInfo.latitude}</p>
+                        </div>
+                    )}
+                </div>
+            ),
         },
-        {
-            title: '用户反馈',
-            icon: <CustomerServiceOutlined/>,
-            content: [
-                '最新用户留言',
-                '服务请求处理',
-                '满意度统计'
-            ]
-        },
-        {
-            title: '系统状态',
-            icon: <LikeOutlined/>,
-            content: [
-                '服务器负载',
-                '存储空间监控',
-                '网络状态检测'
-            ]
-        }
     ];
 
     return (
-        <div style={{
-            position: 'fixed',
-            right: '20px',
-            top: '100px',
-            zIndex: 1000,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            padding: '16px'
-        }}>
-            <Space direction="vertical" size="middle" style={{width: '100%'}}>
+        <div
+            style={{
+                position: 'fixed',
+                left: '260px',
+                bottom: '20px',
+                zIndex: 1000,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)', // 使用与 SideBar 相同的背景颜色
+                backdropFilter: 'blur(1px)', // 背景模糊效果
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                padding: '16px',
+            }}
+        >
+            <Space
+                direction="vertical"
+                size="middle"
+                style={{
+                    width: '100%',
+                    color: 'white', // 设置全局字体颜色为白色
+                }}
+            >
                 {cardItems.map((item, index) => (
                     <Card
                         key={index}
                         title={item.title}
                         extra={item.icon}
-                        headStyle={{borderBottom: '1px solid #f0f0f0'}}
-                        bodyStyle={{padding: '12px 16px'}}
+                        headStyle={{
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.2)', // 标题底部边框颜色
+                            color: 'white', // 标题文字颜色
+                            background: 'rgba(0, 0, 0, 0.5)', // 标题背景颜色
+                        }}
+                        bodyStyle={{
+                            padding: '12px 16px',
+                            color: 'white', // 内容文字颜色
+                            background: 'rgba(0, 0, 0, 0.5)', // 内容背景颜色
+                        }}
                         style={{
                             width: 300,
                             transition: 'transform 0.2s',
                             borderRadius: '8px',
                             ':hover': {
-                                transform: 'translateY(-2px)'
-                            }
+                                transform: 'translateY(-2px)',
+                            },
                         }}
                     >
-                        {item.content.map((text, i) => (
-                            <p key={i} style={{margin: '8px 0'}}>{text}</p>
-                        ))}
+                        {typeof item.content === 'string'
+                            ? <p>{item.content}</p>
+                            : item.content}
                     </Card>
                 ))}
             </Space>
+
+            {/* 抽屉组件 */}
+            <Drawer
+                title="点位信息"
+                placement="right" // 从右侧弹出
+                onClose={() => setDrawerVisible(false)} // 关闭抽屉
+                visible={drawerVisible} // 控制抽屉显示状态
+                width={300} // 抽屉宽度
+                headerStyle={{
+                    background: 'rgba(0, 0, 0, 0.7)', // 抽屉标题背景颜色
+                    color: 'white', // 抽屉标题文字颜色
+                }}
+                bodyStyle={{
+                    background: 'rgba(0, 0, 0, 0.7)', // 抽屉内容背景颜色
+                    color: 'white', // 抽屉内容文字颜色
+                }}
+            >
+                {siteInfo && (
+                    <div style={{ color: 'white' }}>
+                        <p><strong>点位编号：</strong>{siteInfo.site}</p>
+                        <p><strong>经度：</strong>{siteInfo.longitude}</p>
+                        <p><strong>纬度：</strong>{siteInfo.latitude}</p>
+                    </div>
+                )}
+            </Drawer>
         </div>
     );
 };

@@ -16,8 +16,9 @@ import * as Cesium from "cesium";
 import TopBar from "@components/topBar/TopBar.jsx";
 import SideBar from "@components/sideBar/SideBar.jsx";
 import DateRender from '@components/render/DateRender.jsx';
-import Legend from './components/legend/Legend'; // 引入 Legend 组件
+import Legend from './components/rightAndBottom/legend/Legend'; // 引入 Legend 组件
 import CesiumNavigation from "cesium-navigation-es6";
+import PositionAndLegend from "@components/rightAndBottom/PositionAndLegend.jsx";
 
 // 配置导航控件选项（JavaScript对象格式）
 const navigationOptions = {
@@ -181,19 +182,18 @@ const App = () => {
 
     // 定义自定义 token
     const token = {
-        colorBgContainer: 'rgba(122,245,83,0.1)', // 设置容器背景色，透明度为 10%
+        colorBgContainer: 'rgba(122,245,83,0.02)', // 设置容器背景色，透明度为 10%
         borderRadiusLG: 12, // 设置大圆角
         colorPrimary: '#1677ff', // 设置主色调
         fontSize: 14, // 设置默认字体大小
-        colorTextBase: '#4d1b1b', // 设置字体颜色为白色
+        colorTextBase: 'rgba(173,173,173,0.1)', // 设置字体颜色为白色
     };
 
     return (
         <>
-
             <ConfigProvider
                 theme={{
-                    algorithm: darkAlgorithm, // 使用默认主题算法
+                    algorithm: darkAlgorithm, // 使用黑色主题算法
                     token: token, // 应用自定义 token
                 }}>
 
@@ -206,26 +206,11 @@ const App = () => {
                     selectedTime={selectedTime}
                     viewer={viewerState}
                 />
-                {/* 坐标显示面板 */}
-                <div className={styles.positionPanel}>
-                    <div className={styles.positionItem}>
-                        <span className={styles.positionLabel}>经度：</span>
-                        <span className={styles.positionValue}>{positionInfo.longitude}</span>
-                    </div>
-                    <div className={styles.positionItem}>
-                        <span className={styles.positionLabel}>纬度：</span>
-                        <span className={styles.positionValue}>{positionInfo.latitude}</span>
-                    </div>
-                    <div className={styles.positionItem}>
-                        <span className={styles.positionLabel}>高度：</span>
-                        <span className={styles.positionValue}>{positionInfo.height}</span>
-                    </div>
-                </div>
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>
-                <Legend/>
-            </ConfigProvider>
+                <PositionAndLegend positionInfo={positionInfo}/>
+            </ConfigProvider >
         </>
     );
 

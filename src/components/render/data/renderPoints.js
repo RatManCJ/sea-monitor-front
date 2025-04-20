@@ -1,0 +1,126 @@
+import * as Cesium from "cesium";
+import { getDataByTime } from "../../../apis/sea-quality/index.js";
+import { WaterQuality } from "@components/entity/WaterQuality.js";
+
+/**
+ * 根据 selectedTime 和 viewer 渲染点位并返回点位数据
+ * @param {string} selectedTime - 用户选择的时间
+ * @param {object} viewer - Cesium Viewer 实例
+ * @returns {Promise<Array>} - 返回点位数据数组
+ */
+const renderPoints = async (selectedTime, viewer) => {
+    console.log(selectedTime);
+
+    // 获取数据
+    const getData = async (selectedTime) => {
+        try {
+            console.log("Request time:", selectedTime);
+            const response = await getDataByTime(selectedTime + " 00:00:00");
+
+            // 将原始数据映射为 WaterQuality 对象
+            return response.data.map(item => new WaterQuality(
+                item.id,
+                item.sea,
+                item.province,
+                item.city,
+                item.site,
+                item.longitude,
+                item.latitude,
+                item.monitorMonth,
+                item.pH,
+                item.dissolvedOxygen,
+                item.chemicalOxygenDemand,
+                item.inorganicNitrogen,
+                item.activePhosphate,
+                item.petroleum,
+                item.waterQualityClassification
+            ));
+        } catch (error) {
+            console.error('完整错误信息:', {
+                message: error.message,
+                response: error.response?.data
+            });
+            throw error;
+        }
+    };
+
+    if (!viewer) {
+        console.error("Cesium Viewer 未初始化");
+        return [];
+    }
+
+    try {
+        // 获取点位数据
+        const data = await getData(selectedTime);
+
+        // 清空之前的实体
+        viewer.entities.removeAll();
+
+        // 动态计算点的大小
+        const dataSize = data.length; // 数据条数
+        let pointSize = 3; // 默认点大小
+        if (dataSize < 20) {
+            pointSize = 20;
+        } else if (dataSize < 50) {
+            pointSize = 8; // 数据较少时，点较大
+        } else if (dataSize < 200) {
+            pointSize = 5; // 数据中等时，点中等大小
+        } else {
+            pointSize = 3; // 数据较多时，点较小
+        }
+
+        // 遍历数据并创建 Cesium 点实体
+        data.forEach(item => {
+            const longitude = parseFloat(item.longitude); // 经度
+            const latitude = parseFloat(item.latitude); // 纬度
+
+            if (isNaN(longitude) || isNaN(latitude)) {
+                console.warn(`无效的经纬度数据: ${item.longitude}, ${item.latitude}`);
+                return;
+            }
+
+            // 创建 Cesium 点实体
+            viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                point: {
+                    pixelSize: pointSize, // 点的大小
+                    color: getColorByWaterQuality(item.waterQualityClassification), // 根据水质类别设置颜色
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 0.5
+                },
+            });
+        });
+
+        // 调整视角到数据点范围
+        if (data.length > 0) {
+            const positions = data.map(item =>
+                Cesium.Cartesian3.fromDegrees(parseFloat(item.longitude), parseFloat(item.latitude))
+            );
+            viewer.zoomTo(viewer.entities);
+        }
+
+        // 返回点位数据
+        return data;
+    } catch (error) {
+        console.error('Error rendering points:', error);
+        return [];
+    }
+};
+
+// 根据水质类别返回颜色
+const getColorByWaterQuality = (classification) => {
+    switch (classification) {
+        case '一类':
+            return Cesium.Color.GREEN;
+        case '二类':
+            return Cesium.Color.YELLOW;
+        case '三类':
+            return Cesium.Color.ORANGE;
+        case '四类':
+            return Cesium.Color.RED;
+        default:
+            return Cesium.Color.GRAY;
+    }
+};
+
+export default renderPoints;

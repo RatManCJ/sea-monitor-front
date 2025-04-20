@@ -20,7 +20,7 @@ const SideBar = () => {
     const navItems = [
         {
             type: 'scalar',
-            icon: <DatabaseOutlined/>,
+            // icon: <DatabaseOutlined/>,
             label: 'scalar',
             children: [
                 {key: 'nc', label: <Link to="/scalar/ncFile">{'ncFile'}</Link>},
@@ -29,7 +29,7 @@ const SideBar = () => {
         },
         {
             type: 'vector',
-            icon: <DeploymentUnitOutlined/>,
+            // icon: <DeploymentUnitOutlined/>,
             label: 'vector',
             children: [
                 {key: 'velocity', label: <Link to="/vector/velocity">{'velocity'}</Link>},
