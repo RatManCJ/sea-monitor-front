@@ -19,20 +19,19 @@ const SideBar = () => {
     // 导航数据结构
     const navItems = [
         {
-            type: 'scalar',
+            type: 'show',
             // icon: <DatabaseOutlined/>,
-            label: 'scalar',
+            label: '地图展示',
             children: [
-                {key: 'nc', label: <Link to="/scalar/ncFile">{'ncFile'}</Link>},
-                {key: 'salinity', label: <Link to="/scalar/salinity">{'salinity'}</Link>},
+                {key: 'nc', label: <Link to="/map/show">{'地图展示'}</Link>},
             ]
         },
         {
-            type: 'vector',
+            type: 'data',
             // icon: <DeploymentUnitOutlined/>,
-            label: 'vector',
+            label: '数据分析',
             children: [
-                {key: 'velocity', label: <Link to="/vector/velocity">{'velocity'}</Link>},
+                {key: 'salinity', label: <Link to="/data/analysis">{'数据分析'}</Link>},
             ]
         }
     ];
