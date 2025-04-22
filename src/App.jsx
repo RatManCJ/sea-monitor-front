@@ -139,14 +139,21 @@ const App = () => {
                 cesiumMath.toDegrees(randiansPos.latitude)
             );
         }, ScreenSpaceEventType.LEFT_CLICK);
-
+        return viewer
     }
 
 
-    useEffect(() => {
+    useEffect( () => {
         // 初始化Cesium
         Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjdlNTE2Mi05MjE4LTQ1OGMtOGQ1ZS0wODdiNzI5YWQxYzYiLCJpZCI6MjI5NDYzLCJpYXQiOjE3MjEzOTA3OTR9.Vyt-kvvNogPDPw4y74AMwsJDHUUBuhHtwyGDuCBDtSw"
-        createViewer();
+        let viewer;
+        const fn = async () => {
+            viewer = await createViewer();
+        }
+        fn();
+        return () => {
+            viewer?.destroy();
+        }
     }, []);
 
     // 添加坐标更新函数

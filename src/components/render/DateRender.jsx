@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import {SearchOutlined} from '@ant-design/icons';
 import {
     Card,
     Space,
@@ -11,62 +11,62 @@ import {
 } from 'antd';
 import queryDataByInfo from './data/queryDataByInfo.js';
 import renderPoints from './data/renderPoints.js';
-import { Column } from '@ant-design/plots';
+import transformData from './data/transformData.js';
+import ColumnRender from "@components/render/ColumnRender.jsx";
 
-const DateRender = ({ selectedTime, viewer }) => {
+const DateRender = ({selectedTime, viewer}) => {
     const [siteQuery, setSiteQuery] = useState(''); // 用户输入的点位编号
     const [siteInfo, setSiteInfo] = useState(null); // 查询到的点位信息
     const [drawerVisible, setDrawerVisible] = useState(false); // 控制抽屉显示状态
     const [isClicked, setIsClicked] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState('pH'); // 当前选中的指标
-
     // 模拟不同指标的数据
     const metricData = {
-        pH: [
-            { type: '17-05', value: 8.13 },
-            { type: '17-08', value: 8.10 },
-            { type: '17-10', value: 8.11 },
-            { type: '18-05', value: 8.17 },
-            { type: '18-08', value: 8.15 },
-            { type: '18-10', value: 8.11 },
-            { type: '19-05', value: 8.09 },
-            { type: '19-08', value: 8.05 },
-            { type: '19-11', value: 8.05 },
+        'pH': [
+            {type: '17-05', value: 8.13},
+            {type: '17-08', value: 8.10},
+            {type: '17-10', value: 8.11},
+            {type: '18-05', value: 8.17},
+            {type: '18-08', value: 8.15},
+            {type: '18-10', value: 8.11},
+            {type: '19-05', value: 8.09},
+            {type: '19-08', value: 8.05},
+            {type: '19-11', value: 8.05},
         ],
-        溶解氧: [
-            { type: 'A', value: 5.0 },
-            { type: 'B', value: 6.2 },
-            { type: 'C', value: 4.8 },
-            { type: 'D', value: 5.5 },
-            { type: 'E', value: 6.0 },
+        '溶解氧': [
+            {type: 'A', value: 9.71},
+            {type: 'B', value: 7.33},
+            {type: 'C', value: 8.15},
+            {type: 'D', value: 10.20},
+            {type: 'E', value: 7.58},
         ],
-        化学需氧量: [
-            { type: 'A', value: 120 },
-            { type: 'B', value: 200 },
-            { type: 'C', value: 150 },
-            { type: 'D', value: 80 },
-            { type: 'E', value: 70 },
+        '化学需氧量': [
+            {type: 'A', value: 0.71},
+            {type: 'B', value: 1.05},
+            {type: 'C', value: 0.96},
+            {type: 'D', value: 0.77},
+            {type: 'E', value: 0.83},
         ],
-        无机氮: [
-            { type: 'A', value: 30 },
-            { type: 'B', value: 40 },
-            { type: 'C', value: 25 },
-            { type: 'D', value: 15 },
-            { type: 'E', value: 20 },
+        '无机氮': [
+            {type: 'A', value: 0.132},
+            {type: 'B', value: 0.027},
+            {type: 'C', value: 0.045},
+            {type: 'D', value: 0.016},
+            {type: 'E', value: 0.050},
         ],
-        活性磷酸盐: [
-            { type: 'A', value: 5 },
-            { type: 'B', value: 7 },
-            { type: 'C', value: 4 },
-            { type: 'D', value: 3 },
-            { type: 'E', value: 6 },
+        '活性磷酸盐': [
+            {type: 'A', value: 0.003},
+            {type: 'B', value: 0.006},
+            {type: 'C', value: 0.0074},
+            {type: 'D', value: 0.005},
+            {type: 'E', value: 0.011},
         ],
-        石油类: [
-            { type: 'A', value: 10 },
-            { type: 'B', value: 15 },
-            { type: 'C', value: 8 },
-            { type: 'D', value: 5 },
-            { type: 'E', value: 12 },
+        '石油类': [
+            {type: 'A', value: 0.006},
+            {type: 'B', value: 0.009},
+            {type: 'C', value: 0.012},
+            {type: 'D', value: 0.008},
+            {type: 'E', value: 0.010},
         ],
     };
 
@@ -83,6 +83,8 @@ const DateRender = ({ selectedTime, viewer }) => {
 
             const foundSite = data[0];
             setSiteInfo(foundSite);
+            transformData(data, metricData);
+            console.log(metricData['pH']);
             message.success(`查询成功：点位编号 ${foundSite.site}`);
         } catch (error) {
             console.error("查询点位信息时发生错误:", error);
@@ -157,7 +159,7 @@ const DateRender = ({ selectedTime, viewer }) => {
     const cardItems = [
         {
             title: '点位查询',
-            icon: <SearchOutlined style={{ color: 'white' }} />,
+            icon: <SearchOutlined style={{color: 'white'}}/>,
             content: (
                 <div>
                     <Input
@@ -174,7 +176,7 @@ const DateRender = ({ selectedTime, viewer }) => {
                     />
                     <Button
                         type="primary"
-                        icon={<SearchOutlined />}
+                        icon={<SearchOutlined/>}
                         style={{
                             width: '100%',
                             background: isClicked ? '#bfc7e5' : 'rgba(255, 255, 255, 0.1)',
@@ -196,7 +198,7 @@ const DateRender = ({ selectedTime, viewer }) => {
                         Search
                     </Button>
                     {siteInfo && (
-                        <div style={{ marginTop: 8, color: 'white' }}>
+                        <div style={{marginTop: 8, color: 'white'}}>
                             <p><strong>点位编号：</strong>{siteInfo.site}</p>
                             <p><strong>经度：</strong>{siteInfo.longitude}</p>
                             <p><strong>纬度：</strong>{siteInfo.latitude}</p>
@@ -235,8 +237,10 @@ const DateRender = ({ selectedTime, viewer }) => {
                     </Select>
 
                     {/* 柱状图 */}
-                    <div style={{ height: '300px' }}>
-                        <Column {...barChartConfig} />
+                    <div style={{height: '300px'}}>
+                        <ColumnRender
+                            metricData={metricData[selectedMetric]}
+                        />
                     </div>
                 </div>
             ),
@@ -313,7 +317,7 @@ const DateRender = ({ selectedTime, viewer }) => {
                 }}
             >
                 {siteInfo && (
-                    <div style={{ color: 'white' }}>
+                    <div style={{color: 'white'}}>
                         <p><strong>点位编号：</strong>{siteInfo.site}</p>
                         <p><strong>经度：</strong>{siteInfo.longitude}</p>
                         <p><strong>纬度：</strong>{siteInfo.latitude}</p>
