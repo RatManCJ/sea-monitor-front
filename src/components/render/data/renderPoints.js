@@ -9,12 +9,9 @@ import { WaterQuality } from "@components/entity/WaterQuality.js";
  * @returns {Promise<Array>} - 返回点位数据数组
  */
 const renderPoints = async (selectedTime, viewer) => {
-    console.log(selectedTime);
-
     // 获取数据
     const getData = async (selectedTime) => {
         try {
-            console.log("Request time:", selectedTime);
             const response = await getDataByTime(selectedTime + " 00:00:00");
 
             // 将原始数据映射为 WaterQuality 对象

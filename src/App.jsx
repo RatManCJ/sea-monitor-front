@@ -15,11 +15,11 @@ import styles from './App.module.scss';
 import * as Cesium from "cesium";
 import TopBar from "@components/topBar/TopBar.jsx";
 import SideBar from "@components/sideBar/SideBar.jsx";
-import DateRender from '@components/render/DateRender.jsx';
+import DataRender from '@components/render/DataRender.jsx';
 import Legend from './components/rightAndBottom/legend/Legend'; // 引入 Legend 组件
 import CesiumNavigation from "cesium-navigation-es6";
 import PositionAndLegend from "@components/rightAndBottom/PositionAndLegend.jsx";
-
+import {BrowserRouter as Router, Routes, Route, useNavigate, useParams} from 'react-router-dom';
 // 配置导航控件选项（JavaScript对象格式）
 const navigationOptions = {
     // 启用指南针
@@ -143,7 +143,7 @@ const App = () => {
     }
 
 
-    useEffect( () => {
+    useEffect(() => {
         // 初始化Cesium
         Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjdlNTE2Mi05MjE4LTQ1OGMtOGQ1ZS0wODdiNzI5YWQxYzYiLCJpZCI6MjI5NDYzLCJpYXQiOjE3MjEzOTA3OTR9.Vyt-kvvNogPDPw4y74AMwsJDHUUBuhHtwyGDuCBDtSw"
         let viewer;
@@ -193,14 +193,14 @@ const App = () => {
         borderRadiusLG: 12, // 设置大圆角
         colorPrimary: '#1677ff', // 设置主色调
         fontSize: 14, // 设置默认字体大小
-        colorTextBase: 'rgb(255,255,255)', // 设置字体颜色为白色
+        colorTextBase: 'rgba(255,255,255, 0.6)', // 设置字体颜色为白色
     };
 
     return (
         <>
             <ConfigProvider
                 theme={{
-                    algorithm: defaultAlgorithm, // 使用黑色主题算法
+                    algorithm: darkAlgorithm, // 使用黑色主题算法
                     token: token, // 应用自定义 token
                 }}>
 
@@ -209,15 +209,22 @@ const App = () => {
                 {/* 左侧菜单栏*/}
                 <SideBar/>
                 {/*渲染图表*/}
-                <DateRender
-                    selectedTime={selectedTime}
-                    viewer={viewerState}
-                />
+                {/*<DataRender*/}
+                {/*    selectedTime={selectedTime}*/}
+                {/*    viewer={viewerState}*/}
+                {/*/>*/}
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>
                 <PositionAndLegend positionInfo={positionInfo}/>
-            </ConfigProvider >
+                    <Routes>
+                        <Route path="/data/:date"
+                               element={
+                                   <DataRender
+                                       viewer={viewerState}/>
+                               }/>
+                    </Routes>
+            </ConfigProvider>
         </>
     );
 

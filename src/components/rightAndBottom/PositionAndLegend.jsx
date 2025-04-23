@@ -9,14 +9,14 @@ const PositionAndLegend = ({ positionInfo }) => {
             <div className={styles.positionPanel}>
                 <div className={styles.positionItem}>
                     <span className={styles.positionLabel}>中心点位经度：</span>
-                    <span className={styles.positionValue}>{positionInfo.longitude}</span>
+                    <span className={styles.positionValue}>{positionInfo.longitude}°</span>
                 </div>
                 <div className={styles.positionItem}>
                     <span className={styles.positionLabel}>中心点位纬度：</span>
-                    <span className={styles.positionValue}>{positionInfo.latitude}</span>
+                    <span className={styles.positionValue}>{positionInfo.latitude}°</span>
                 </div>
                 <div className={styles.positionItem}>
-                    <span className={styles.positionLabel}>中心点位高度：</span>
+                    <span className={styles.positionLabel}>视角高度：</span>
                     <span className={styles.positionValue}>{positionInfo.height}</span>
                 </div>
             </div>
