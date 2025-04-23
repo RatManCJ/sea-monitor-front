@@ -15,8 +15,8 @@ import transformData from './data/transformData.js';
 import ColumnRender from "@components/render/ColumnRender.jsx";
 import {useParams} from "react-router-dom";
 
-const DataRender = ({selectedTime, viewer}) => {
-    const { date } = useParams(); // 获取路由参数
+const DataRender = ({viewer}) => {
+    const {date} = useParams(); // 获取路由参数
     const [siteQuery, setSiteQuery] = useState(''); // 用户输入的点位编号
     const [siteInfo, setSiteInfo] = useState(null); // 查询到的点位信息
     const [drawerVisible, setDrawerVisible] = useState(false); // 控制抽屉显示状态
@@ -72,7 +72,6 @@ const DataRender = ({selectedTime, viewer}) => {
         ],
     };
 
-    renderPoints(date, viewer);
     // 处理查询点位信息
     const handleSearch = async () => {
         try {
@@ -97,11 +96,12 @@ const DataRender = ({selectedTime, viewer}) => {
     };
 
     // 页面加载时自动发送请求
-    // useEffect(() => {
-    //     const defaultSiteQuery = 'H00JQ007'; // 默认点位编号
-    //     setSiteQuery(defaultSiteQuery); // 设置默认查询值
-    //     handleSearch(defaultSiteQuery); // 自动发送请求
-    // }, []); // 空依赖数组确保只在组件挂载时执行一次
+    useEffect(() => {
+        const defaultSiteQuery = 'H00JQ007'; // 默认点位编号
+        setSiteQuery(defaultSiteQuery); // 设置默认查询值
+        handleSearch(defaultSiteQuery); // 自动发送请求
+        renderPoints(date, viewer)
+    }, [date, viewer]); // 空依赖数组确保只在组件挂载时执行一次
 
     // 根据选中的指标获取当前数据
     const currentChartData = metricData[selectedMetric];
