@@ -27,7 +27,7 @@ const queryDataByInfo = async (site, viewer) => {
             item.longitude,
             item.latitude,
             item.monitorMonth,
-            item.pH,
+            item.ph,
             item.dissolvedOxygen,
             item.chemicalOxygenDemand,
             item.inorganicNitrogen,

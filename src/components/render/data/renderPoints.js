@@ -66,6 +66,21 @@ const renderPoints = async (selectedTime, viewer) => {
             pointSize = 3; // 数据较多时，点较小
         }
 
+        // 创建一个用于显示信息的标签实体
+        let labelEntity = viewer.entities.add({
+            label: {
+                text: '',
+                font: '14px sans-serif',
+                fillColor: Cesium.Color.WHITE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                show: false, // 默认不显示
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(0, -10), // 稍微向上偏移一点
+            }
+        });
+
         // 遍历数据并创建 Cesium 点实体
         data.forEach(item => {
             const longitude = parseFloat(item.longitude); // 经度
@@ -77,7 +92,7 @@ const renderPoints = async (selectedTime, viewer) => {
             }
 
             // 创建 Cesium 点实体
-            viewer.entities.add({
+            const pointEntity = viewer.entities.add({
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 point: {
                     pixelSize: pointSize, // 点的大小
@@ -85,8 +100,26 @@ const renderPoints = async (selectedTime, viewer) => {
                     outlineColor: Cesium.Color.BLACK,
                     outlineWidth: 0.5
                 },
+                properties: item // 将原始数据作为属性附加到实体上
             });
         });
+
+        // 添加鼠标移动监听器
+        const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+        handler.setInputAction((movement) => {
+            const pickedObject = viewer.scene.pick(movement.endPosition);
+            if (Cesium.defined(pickedObject) && pickedObject.id.properties) {
+                const properties = pickedObject.id.properties;
+                labelEntity.label.show = true;
+                labelEntity.position = pickedObject.id.position.getValue(Cesium.JulianDate.now());
+                labelEntity.label.text =
+                    `名称: ${properties.site.getValue()}\n` +
+                    `经度: ${properties.longitude.getValue()}\n` +
+                    `纬度: ${properties.latitude.getValue()}`;
+            } else {
+                labelEntity.label.show = false;
+            }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
         // 调整视角到数据点范围
         if (data.length > 0) {

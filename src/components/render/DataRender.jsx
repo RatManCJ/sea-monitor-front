@@ -23,7 +23,7 @@ const DataRender = ({viewer}) => {
     const [isClicked, setIsClicked] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState('pH'); // 当前选中的指标
     // 模拟不同指标的数据
-    const metricData = {
+    const [metricData, setMetricData] = useState({
         'pH': [
             {type: '17-05', value: 8.13},
             {type: '17-08', value: 8.10},
@@ -70,7 +70,7 @@ const DataRender = ({viewer}) => {
             {type: 'D', value: 0.008},
             {type: 'E', value: 0.010},
         ],
-    };
+    })
 
     // 处理查询点位信息
     const handleSearch = async () => {
@@ -85,8 +85,8 @@ const DataRender = ({viewer}) => {
 
             const foundSite = data[0];
             setSiteInfo(foundSite);
-            transformData(data, metricData);
-            console.log(metricData['pH']);
+            const transformedData = transformData(data, metricData);
+            setMetricData(transformedData); // 更新状态
             message.success(`查询成功：点位编号 ${foundSite.site}`);
         } catch (error) {
             console.error("查询点位信息时发生错误:", error);
@@ -101,6 +101,7 @@ const DataRender = ({viewer}) => {
         setSiteQuery(defaultSiteQuery); // 设置默认查询值
         handleSearch(defaultSiteQuery); // 自动发送请求
         renderPoints(date, viewer)
+        console.log(metricData)
     }, [date, viewer]); // 空依赖数组确保只在组件挂载时执行一次
 
     // 根据选中的指标获取当前数据
@@ -242,7 +243,7 @@ const DataRender = ({viewer}) => {
                     {/* 柱状图 */}
                     <div style={{height: '300px'}}>
                         <ColumnRender
-                            metricData={metricData[selectedMetric]}
+                            metricData={currentChartData}
                         />
                     </div>
                 </div>

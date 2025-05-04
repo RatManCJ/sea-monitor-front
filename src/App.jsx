@@ -164,7 +164,7 @@ const App = () => {
         // 转换坐标系
         const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
-        const latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
         const height = cartographic.height.toFixed(2);
 
         if (longitude > 180) {
