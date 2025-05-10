@@ -1,60 +1,45 @@
 import * as Cesium from "cesium";
+
 import { getDataByTime } from "../../../apis/sea-quality/index.js";
 import { WaterQuality } from "@components/entity/WaterQuality.js";
 
 /**
- * 根据 selectedTime 和 viewer 渲染点位并返回点位数据
+ * 根据 selectedTime 和 viewer 渲染点位，通过颜色和大小表示水质
  * @param {string} selectedTime - 用户选择的时间
  * @param {object} viewer - Cesium Viewer 实例
  * @returns {Promise<Array>} - 返回点位数据数组
  */
-const renderPoints = async (selectedTime, viewer) => {
-    // 获取数据
-    const getData = async (selectedTime) => {
-        try {
-            const response = await getDataByTime(selectedTime + " 00:00:00");
 
-            // 将原始数据映射为 WaterQuality 对象
-            return response.data.map(item => new WaterQuality(
-                item.id,
-                item.sea,
-                item.province,
-                item.city,
-                item.site,
-                item.longitude,
-                item.latitude,
-                item.monitorMonth,
-                item.pH,
-                item.dissolvedOxygen,
-                item.chemicalOxygenDemand,
-                item.inorganicNitrogen,
-                item.activePhosphate,
-                item.petroleum,
-                item.waterQualityClassification
-            ));
-        } catch (error) {
-            console.error('完整错误信息:', {
-                message: error.message,
-                response: error.response?.data
-            });
-            throw error;
-        }
-    };
-
+let pointEntities = [];
+const renderPoints = async (selectedTime, viewer,  onPointSelect) => {
     if (!viewer) {
         console.error("Cesium Viewer 未初始化");
         return [];
     }
 
     try {
-        // 获取点位数据
-        const data = await getData(selectedTime);
+        const response = await getDataByTime(selectedTime + " 00:00:00");
+        const data = response.data.map(item => new WaterQuality(
+            item.id,
+            item.sea,
+            item.province,
+            item.city,
+            item.site,
+            item.longitude,
+            item.latitude,
+            item.monitorMonth,
+            item.pH,
+            item.dissolvedOxygen,
+            item.chemicalOxygenDemand,
+            item.inorganicNitrogen,
+            item.activePhosphate,
+            item.petroleum,
+            item.waterQualityClassification
+        ));
 
-        // 清空之前的实体
         viewer.entities.removeAll();
 
-        // 动态计算点的大小
-        const dataSize = data.length; // 数据条数
+        const dataSize = data.length;
         let pointSize = 3; // 默认点大小
         if (dataSize < 20) {
             pointSize = 20;
@@ -102,26 +87,50 @@ const renderPoints = async (selectedTime, viewer) => {
                 },
                 properties: item // 将原始数据作为属性附加到实体上
             });
+            pointEntities.push({ entity: pointEntity, originalSize: pointSize });
         });
 
-        // 添加鼠标移动监听器
-        const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+// 记录上一个高亮的点
+        let lastHighlighted = null;
+
+        // 鼠标悬停放大
+        const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
         handler.setInputAction((movement) => {
-            const pickedObject = viewer.scene.pick(movement.endPosition);
-            if (Cesium.defined(pickedObject) && pickedObject.id.properties) {
-                const properties = pickedObject.id.properties;
-                labelEntity.label.show = true;
-                labelEntity.position = pickedObject.id.position.getValue(Cesium.JulianDate.now());
-                labelEntity.label.text =
-                    `名称: ${properties.site.getValue()}\n` +
-                    `经度: ${properties.longitude.getValue()}\n` +
-                    `纬度: ${properties.latitude.getValue()}`;
-            } else {
-                labelEntity.label.show = false;
+            const picked = viewer.scene.pick(movement.endPosition);
+            if (Cesium.defined(picked) && picked.id && picked.id.point) {
+                if (lastHighlighted && lastHighlighted !== picked.id) {
+                    // 恢复上一个点的大小
+                    const found = pointEntities.find(p => p.entity === lastHighlighted);
+                    if (found) lastHighlighted.point.pixelSize = found.originalSize;
+                }
+                picked.id.point.pixelSize = 2 * pointSize; // 放大
+                lastHighlighted = picked.id;
+            } else if (lastHighlighted) {
+                // 鼠标移出时恢复
+                const found = pointEntities.find(p => p.entity === lastHighlighted);
+                if (found) lastHighlighted.point.pixelSize = found.originalSize;
+                lastHighlighted = null;
             }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-        // 调整视角到数据点范围
+        handler.setInputAction((movement) => {
+            const picked = viewer.scene.pick(movement.position);
+            if (Cesium.defined(picked) && picked.id && picked.id.point) {
+                const entity = picked.id;
+                const cartographic = Cesium.Cartographic.fromCartesian(entity.position._value);
+                const longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+                const latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+                const site = entity.properties.site;
+                if (onPointSelect) {
+                    onPointSelect({
+                        site: site,
+                        longitude: longitude,
+                        latitude: latitude
+                    });
+                }
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
         if (data.length > 0) {
             const positions = data.map(item =>
                 Cesium.Cartesian3.fromDegrees(parseFloat(item.longitude), parseFloat(item.latitude))
@@ -129,7 +138,6 @@ const renderPoints = async (selectedTime, viewer) => {
             viewer.zoomTo(viewer.entities);
         }
 
-        // 返回点位数据
         return data;
     } catch (error) {
         console.error('Error rendering points:', error);

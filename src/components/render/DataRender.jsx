@@ -9,11 +9,12 @@ import {
     Drawer,
     Select,
 } from 'antd';
-import queryDataByInfo from './data/queryDataByInfo.js';
+import {queryDataByInfo} from './data/queryDataByInfo.js';
 import renderPoints from './data/renderPoints.js';
-import transformData from './data/transformData.js';
+import {transformData} from './data/transformData.js';
 import ColumnRender from "@components/render/ColumnRender.jsx";
 import {useParams} from "react-router-dom";
+import * as Cesium from "cesium";
 
 const DataRender = ({viewer}) => {
     const {date} = useParams(); // 获取路由参数
@@ -75,6 +76,7 @@ const DataRender = ({viewer}) => {
     // 处理查询点位信息
     const handleSearch = async () => {
         try {
+            console.log("siteQuery : " + siteQuery);
             const data = await queryDataByInfo(siteQuery, viewer);
 
             if (!data || data.length === 0) {
@@ -97,12 +99,22 @@ const DataRender = ({viewer}) => {
 
     // 页面加载时自动发送请求
     useEffect(() => {
-        const defaultSiteQuery = 'H00JQ007'; // 默认点位编号
-        setSiteQuery(defaultSiteQuery); // 设置默认查询值
-        handleSearch(defaultSiteQuery); // 自动发送请求
-        renderPoints(date, viewer)
-        console.log(metricData)
-    }, [date, viewer]); // 空依赖数组确保只在组件挂载时执行一次
+        const defaultSiteQuery = 'H00JQ007';
+        setSiteQuery(defaultSiteQuery);
+        handleSearch(defaultSiteQuery);
+        // 重点：传入 onPointSelect 回调
+        renderPoints(date, viewer, (info) => {
+            setSiteQuery(info.site);
+            setSiteInfo({
+                site: typeof info.site === 'object' && info.site.getValue ? info.site.getValue() : info.site,
+                longitude: typeof info.longitude === 'object' && info.longitude.getValue ? info.longitude.getValue() : info.longitude,
+                latitude: typeof info.latitude === 'object' && info.latitude.getValue ? info.latitude.getValue() : info.latitude,
+            });
+            // 你可以根据需要自动查询详细信息
+            // handleSearch(info.site);
+        });
+
+    }, [date, viewer]);
 
     // 根据选中的指标获取当前数据
     const currentChartData = metricData[selectedMetric];
@@ -305,29 +317,29 @@ const DataRender = ({viewer}) => {
             </Space>
 
             {/* 抽屉组件 */}
-            <Drawer
-                title="点位信息"
-                placement="right"
-                onClose={() => setDrawerVisible(false)}
-                visible={drawerVisible}
-                width={300}
-                headerStyle={{
-                    background: 'rgba(0, 0, 0, 0.7)',
-                    color: 'white',
-                }}
-                bodyStyle={{
-                    background: 'rgba(0, 0, 0, 0.7)',
-                    color: 'white',
-                }}
-            >
-                {siteInfo && (
-                    <div style={{color: 'white'}}>
-                        <p><strong>点位编号：</strong>{siteInfo.site}</p>
-                        <p><strong>经度：</strong>{siteInfo.longitude}</p>
-                        <p><strong>纬度：</strong>{siteInfo.latitude}</p>
-                    </div>
-                )}
-            </Drawer>
+            {/*<Drawer*/}
+            {/*    title="点位信息"*/}
+            {/*    placement="right"*/}
+            {/*    onClose={() => setDrawerVisible(false)}*/}
+            {/*    visible={drawerVisible}*/}
+            {/*    width={300}*/}
+            {/*    headerStyle={{*/}
+            {/*        background: 'rgba(0, 0, 0, 0.7)',*/}
+            {/*        color: 'white',*/}
+            {/*    }}*/}
+            {/*    bodyStyle={{*/}
+            {/*        background: 'rgba(0, 0, 0, 0.7)',*/}
+            {/*        color: 'white',*/}
+            {/*    }}*/}
+            {/*>*/}
+            {/*    {siteInfo && (*/}
+            {/*        <div style={{color: 'white'}}>*/}
+            {/*            <p><strong>点位编号：</strong>{siteInfo.site}</p>*/}
+            {/*            <p><strong>经度：</strong>{siteInfo.longitude}</p>*/}
+            {/*            <p><strong>纬度：</strong>{siteInfo.latitude}</p>*/}
+            {/*        </div>*/}
+            {/*    )}*/}
+            {/*</Drawer>*/}
         </div>
     );
 };

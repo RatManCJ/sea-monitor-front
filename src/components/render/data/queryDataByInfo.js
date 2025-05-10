@@ -1,22 +1,36 @@
 import * as Cesium from "cesium";
-import {getDataBySiteInfo} from "../../../apis/sea-quality/index.js";
-import {WaterQuality} from "@components/entity/WaterQuality.js";
+import { getDataBySiteInfo } from "../../../apis/sea-quality/index.js";
+import { WaterQuality } from "@components/entity/WaterQuality.js";
+import {message} from "antd";
 
-/**
- * 根据点位编号查询点位信息并锁定 Cesium 视角
- * @param {string} site - 点位编号
- * @param {object} viewer - Cesium Viewer 实例
- * @returns {Promise<Array>} - 返回点位数据数组（如果查询失败则返回空数组）
- */
-const queryDataByInfo = async (site, viewer) => {
+// 用于存储通过 queryDataByInfo 添加的实体，以便后续查找
+let queriedEntities = {};
+
+const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searchInfo
+    let site;
+
+    if (typeof searchInfo === 'string') {
+        site = searchInfo; // 如果直接传入字符串，则认为是点位编号
+    } else if (searchInfo || searchInfo.site) {
+        site = searchInfo;
+    }
+
     if (!site) {
-        console.error("点位编号或 Cesium Viewer 未提供");
+        console.error("未提供有效的点位信息进行查询");
         return [];
     }
 
     try {
-        // 调用 API 获取点位信息
+        // 调用 API 获取点位信息 (仍然使用点位编号进行查询)
+        console.log(`正在查询点位编号为 ${site} 的信息`);
         const response = await getDataBySiteInfo(site);
+
+        console.log(response.data);
+        //
+        // if (!response || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        //     console.warn(`未找到点位编号为 ${site} 的相关信息`);
+        //     return [];
+        // }
 
         const points = response.data.map(item => new WaterQuality(
             item.id,
@@ -36,72 +50,60 @@ const queryDataByInfo = async (site, viewer) => {
             item.waterQualityClassification
         ));
 
-        if (!Array.isArray(points) || points.length === 0) {
-            alert(`未找到点位编号为 ${site} 的相关信息`);
-            return [];
-        }
-
         // 清空之前的实体
         viewer.entities.removeAll();
-
-        // 存储第一个有效点的经纬度
+        queriedEntities = {}; // 清空之前的实体引用
         let firstPosition = null;
 
-        // 遍历点位数据，只添加第一个有效的点
         for (const pointInfo of points) {
             const longitude = parseFloat(pointInfo.longitude);
             const latitude = parseFloat(pointInfo.latitude);
 
             if (isNaN(longitude) || isNaN(latitude)) {
                 console.warn(`无效的经纬度数据: ${pointInfo.longitude}, ${pointInfo.latitude}`);
-                continue; // 跳过无效数据
+                continue;
             }
 
-            // 在 Cesium 中创建点实体
-            viewer.entities.add({
+            const entity = viewer.entities.add({
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 point: {
-                    pixelSize: 30, // 点的大小
-                    color: getColorByWaterQuality(pointInfo.waterQualityClassification), // 点的颜色
+                    pixelSize: 30,
+                    color: getColorByWaterQuality(pointInfo.waterQualityClassification),
                     outlineColor: Cesium.Color.WHITE,
-                    outlineWidth: 2
+                    outlineWidth: 2,
+                    pick: true
                 },
                 label: {
-                    text: pointInfo.site, // 显示点位编号
+                    text: pointInfo.site,
                     font: '14px sans-serif',
                     fillColor: Cesium.Color.WHITE,
                     outlineColor: Cesium.Color.BLACK,
                     outlineWidth: 2,
                     style: Cesium.LabelStyle.FILL_AND_OUTLINE
-                }
+                },
+                properties: pointInfo
             });
-
-            // 记录第一个有效点的位置
-            firstPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude,1000000);
-
-            // 只添加第一个有效点后退出循环
+            queriedEntities[pointInfo.site] = entity;
+            firstPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude, 500);
             break;
         }
 
-        // 如果有有效点，调整视角到该点
-        if (firstPosition) {
-            viewer.camera.flyTo({
-                destination: firstPosition, // 高度 5000 米
-                orientation: {
-                    heading: Cesium.Math.toRadians(0), // 方向角度
-                    pitch: Cesium.Math.toRadians(-90), // 俯仰角度
-                    roll: 0.0
-                }
-            });
-        } else {
-            alert("未找到任何有效的点位信息");
-        }
-
-        // 返回点位数据
+        // if (firstPosition) {
+        //     viewer.camera.flyTo({
+        //         destination: firstPosition,
+        //         orientation: {
+        //             heading: Cesium.Math.toRadians(0),
+        //             pitch: Cesium.Math.toRadians(-90),
+        //             roll: 0.0
+        //         }
+        //     });
+        // } else {
+        //     message.warn(`未找到点位编号为 ${site} 的有效坐标信息。`);
+        // }
         return points;
     } catch (error) {
         console.error('查询点位信息时发生错误:', error);
-        alert(`查询点位编号为 ${site} 的信息失败，请稍后再试`);
+        message.error(`查询点位编号为 ${site} 的信息失败，请稍后再试`);
         return [];
     }
 };
@@ -121,4 +123,4 @@ const getColorByWaterQuality = (classification) => {
     }
 };
 
-export default queryDataByInfo;
+export { queryDataByInfo, queriedEntities };

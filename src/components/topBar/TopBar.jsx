@@ -13,9 +13,6 @@ const TopBar = ({onTimeChange}) => {
     const {token} = useToken();
 
     const [value, setValue] = useState();
-    const onPopupScroll = e => {
-        console.log('onPopupScroll', e);
-    };
 
     return (
         <Header className={styles.topBar} style={{background: token.colorBgContainer, color: token.colorPrimary}}>
