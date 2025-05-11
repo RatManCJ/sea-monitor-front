@@ -5,12 +5,9 @@ import {
     Cartographic,
     ScreenSpaceEventType,
     Math as cesiumMath,
-    ImageryLayer,
-    WebMapTileServiceImageryProvider,
-    createWorldTerrainAsync
 } from 'cesium';
 import {useEffect, useState} from "react";
-import {Upload, Button, message, ConfigProvider, theme, Layout} from 'antd';
+import {ConfigProvider, theme} from 'antd';
 import styles from './App.module.scss';
 import * as Cesium from "cesium";
 import TopBar from "@components/topBar/TopBar.jsx";

@@ -298,7 +298,7 @@ const DataRender = ({viewer}) => {
                         bodyStyle={{
                             padding: '12px 16px',
                             color: 'pink',
-                            background: 'rgba(122,245,83,0.4)',
+                            background: 'rgba(122,245,83,0.1)',
                         }}
                         style={{
                             width: 300,
@@ -315,31 +315,6 @@ const DataRender = ({viewer}) => {
                     </Card>
                 ))}
             </Space>
-
-            {/* 抽屉组件 */}
-            {/*<Drawer*/}
-            {/*    title="点位信息"*/}
-            {/*    placement="right"*/}
-            {/*    onClose={() => setDrawerVisible(false)}*/}
-            {/*    visible={drawerVisible}*/}
-            {/*    width={300}*/}
-            {/*    headerStyle={{*/}
-            {/*        background: 'rgba(0, 0, 0, 0.7)',*/}
-            {/*        color: 'white',*/}
-            {/*    }}*/}
-            {/*    bodyStyle={{*/}
-            {/*        background: 'rgba(0, 0, 0, 0.7)',*/}
-            {/*        color: 'white',*/}
-            {/*    }}*/}
-            {/*>*/}
-            {/*    {siteInfo && (*/}
-            {/*        <div style={{color: 'white'}}>*/}
-            {/*            <p><strong>点位编号：</strong>{siteInfo.site}</p>*/}
-            {/*            <p><strong>经度：</strong>{siteInfo.longitude}</p>*/}
-            {/*            <p><strong>纬度：</strong>{siteInfo.latitude}</p>*/}
-            {/*        </div>*/}
-            {/*    )}*/}
-            {/*</Drawer>*/}
         </div>
     );
 };
