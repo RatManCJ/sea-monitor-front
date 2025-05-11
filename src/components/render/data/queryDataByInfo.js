@@ -16,7 +16,6 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
     }
 
     if (!site) {
-        console.error("未提供有效的点位信息进行查询");
         return [];
     }
 
