@@ -25,11 +25,6 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
         const response = await getDataBySiteInfo(site);
 
         console.log(response.data);
-        //
-        // if (!response || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
-        //     console.warn(`未找到点位编号为 ${site} 的相关信息`);
-        //     return [];
-        // }
 
         const points = response.data.map(item => new WaterQuality(
             item.id,

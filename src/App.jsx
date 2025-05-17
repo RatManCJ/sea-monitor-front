@@ -4,7 +4,7 @@ import {
     ScreenSpaceEventHandler,
     Cartographic,
     ScreenSpaceEventType,
-    Math as cesiumMath,
+    Math as cesiumMath, createWorldTerrainAsync,
 } from 'cesium';
 import {useEffect, useState} from "react";
 import {ConfigProvider, theme} from 'antd';
@@ -17,6 +17,8 @@ import Legend from './components/rightAndBottom/legend/Legend'; // 引入 Legend
 import CesiumNavigation from "cesium-navigation-es6";
 import PositionAndLegend from "@components/rightAndBottom/PositionAndLegend.jsx";
 import {BrowserRouter as Router, Routes, Route, useNavigate, useParams} from 'react-router-dom';
+import BottomBar from "@components/bottom/BottomBar.jsx";
+import RightSideBar from "@components/right/RightSideBar.jsx";
 // 配置导航控件选项（JavaScript对象格式）
 const navigationOptions = {
     // 启用指南针
@@ -86,11 +88,6 @@ const App = () => {
             //   {}
             // ),
         });
-
-        // viewer.terrainProvider = createWorldTerrainAsync({
-        //     requestVertexNormals: true, //开启地形光照
-        //     // requestWaterMask: true, // 开启水面波纹
-        // });
 
         //抗锯齿
         viewer.scene.postProcessStages.fxaa.enabled = true;
@@ -205,6 +202,7 @@ const App = () => {
                 <TopBar onTimeChange={handleTimeChange}/>
                 {/* 左侧菜单栏*/}
                 <SideBar/>
+                <RightSideBar/>
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>
@@ -216,6 +214,7 @@ const App = () => {
                                    viewer={viewerState}/>
                            }/>
                 </Routes>
+                <BottomBar/>
             </ConfigProvider>
         </>
     );
