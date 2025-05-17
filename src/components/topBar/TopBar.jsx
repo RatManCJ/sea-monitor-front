@@ -15,7 +15,11 @@ const TopBar = ({onTimeChange}) => {
     const [value, setValue] = useState();
 
     return (
-        <Header className={styles.topBar} style={{background: token.colorBgContainer, color: token.colorPrimary}}>
+        <Header className={styles.topBar}
+                style={{
+                    background: token.colorBgContainer,
+                    color: token.colorPrimary
+                }}>
             <div className={styles.topBarContent}>
                 <div className={styles.navItems}>
                     <Title className={styles.title}>近海水质信息可视化系统</Title>

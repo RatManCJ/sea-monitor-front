@@ -206,7 +206,7 @@ const App = () => {
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>
-                <PositionAndLegend positionInfo={positionInfo}/>
+                {/*<PositionAndLegend positionInfo={positionInfo}/>*/}
                 <Routes>
                     <Route path="/data/:date"
                            element={
