@@ -1,24 +1,14 @@
-import {
-    Viewer,
-    Ion,
-    ScreenSpaceEventHandler,
-    Cartographic,
-    ScreenSpaceEventType,
-    Math as cesiumMath, createWorldTerrainAsync,
-} from 'cesium';
+import * as Cesium from 'cesium';
+import {Cartographic, Ion, Math as cesiumMath, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer} from 'cesium';
 import {useEffect, useState} from "react";
 import {ConfigProvider, theme} from 'antd';
 import styles from './App.module.scss';
-import * as Cesium from "cesium";
 import TopBar from "@components/topBar/TopBar.jsx";
 import SideBar from "@components/sideBar/SideBar.jsx";
-import DataRender from '@components/render/DataRender.jsx';
-import Legend from './components/rightAndBottom/legend/Legend'; // 引入 Legend 组件
-import CesiumNavigation from "cesium-navigation-es6";
-import PositionAndLegend from "@components/rightAndBottom/PositionAndLegend.jsx";
-import {BrowserRouter as Router, Routes, Route, useNavigate, useParams} from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom';
 import BottomBar from "@components/bottom/BottomBar.jsx";
 import RightSideBar from "@components/right/RightSideBar.jsx";
+import DataRender from "@components/render/DataRender.jsx";
 // 配置导航控件选项（JavaScript对象格式）
 const navigationOptions = {
     // 启用指南针
@@ -120,7 +110,7 @@ const App = () => {
         updateCameraPosition(viewer);
 
         setViewer(viewer);
-        const navigationControl = new CesiumNavigation(viewer, navigationOptions);
+        // const navigationControl = new CesiumNavigation(viewer, navigationOptions);
 
         const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
         handler.setInputAction((e) => {
@@ -202,7 +192,7 @@ const App = () => {
                 <TopBar onTimeChange={handleTimeChange}/>
                 {/* 左侧菜单栏*/}
                 <SideBar/>
-                <RightSideBar/>
+                {/*<RightSideBar />*/}
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>
@@ -210,8 +200,10 @@ const App = () => {
                 <Routes>
                     <Route path="/data/:date"
                            element={
-                               <DataRender
+                               <RightSideBar
                                    viewer={viewerState}/>
+                               // <DataRender
+                               //     viewer={viewerState}/>
                            }/>
                 </Routes>
                 <BottomBar/>
