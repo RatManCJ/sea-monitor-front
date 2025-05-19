@@ -50,11 +50,10 @@ const LayerMenu = ({ viewer }) => {
     }, []);
 
     const handleSelectChange = (e) => {
-        console.log('selected value:', e.target.value);
         viewer.imageryLayers.removeAll();
         switch (e.target.value) {
             case 'vector':
-                viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+                viewer.imageryLayers.addImageryProvider(new window.Cesium.WebMapTileServiceImageryProvider({
                     url: baseLayer,
                     layer: "tdtVecBasicLayer",
                     style: 'default',
@@ -65,7 +64,7 @@ const LayerMenu = ({ viewer }) => {
                 }))
                 break;
             case 'image':
-                viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+                viewer.imageryLayers.addImageryProvider(new window.Cesium.WebMapTileServiceImageryProvider({
                     url: imageLayer,
                     layer: "tdtImgBasicLayer",
                     style: 'default',
@@ -76,7 +75,7 @@ const LayerMenu = ({ viewer }) => {
                 }))
                 break;
             case 'topographic':
-                viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+                viewer.imageryLayers.addImageryProvider(new window.Cesium.WebMapTileServiceImageryProvider({
                     url: topographicLayer,
                     layer: "tdtTerrainBasicLayer",
                     style: 'default',

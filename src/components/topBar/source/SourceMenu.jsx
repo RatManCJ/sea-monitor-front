@@ -1,7 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {Button, Checkbox} from 'antd';
 import {CloseOutlined} from '@ant-design/icons';
-import * as Cesium from 'cesium';
 
 // 自定义组件用于显示SVG图标
 const LineIcon = () => (
@@ -49,12 +48,13 @@ const SourceMenu = ({viewer}) => {
 
     // 图层加载/移除逻辑
     useEffect(() => {
+        if (viewer === null) return;
         const loadLayer = async (layerName, url) => {
             if (layers[layerName]) {
                 removeLayer(layerName); // 防止重复加载
-                const dataSource = await Cesium.GeoJsonDataSource.load(url, {});
+                const dataSource = await window.Cesium.GeoJsonDataSource.load(url, {});
                 dataSource.name = layerName;
-                viewer.dataSources.add(dataSource);
+                await viewer.dataSources.add(dataSource);
             } else {
                 removeLayer(layerName);
             }

@@ -1,13 +1,25 @@
-import * as Cesium from 'cesium';
-import {
-    Cartographic, ImageryLayer,
+// import * as Cesium from 'cesium';
+// import {
+//     Cartographic, ImageryLayer,
+//     Ion,
+//     Math as cesiumMath,
+//     ScreenSpaceEventHandler,
+//     ScreenSpaceEventType,
+//     Viewer,
+//     WebMapTileServiceImageryProvider
+// } from 'cesium';
+// 不再使用 import，直接使用全局 Cesium 对象
+
+const {
+    Cartographic,
+    ImageryLayer,
     Ion,
-    Math as cesiumMath,
+    Math: cesiumMath,
     ScreenSpaceEventHandler,
     ScreenSpaceEventType,
     Viewer,
     WebMapTileServiceImageryProvider
-} from 'cesium';
+} = window.Cesium;
 import {useEffect, useState} from "react";
 import {ConfigProvider, theme} from 'antd';
 import styles from './App.module.scss';
@@ -16,28 +28,28 @@ import SideBar from "@components/sideBar/SideBar.jsx";
 import {Route, Routes} from 'react-router-dom';
 import BottomBar from "@components/bottom/BottomBar.jsx";
 import RightSideBar from "@components/right/RightSideBar.jsx";
-import geoJson from '../public/geojson/china_division.json';
-// 配置导航控件选项（JavaScript对象格式）
-const navigationOptions = {
-    // 启用指南针
-    enableCompass: true,
-    // 启用缩放控件
-    enableZoomControls: true,
-    // 启用距离图例
-    enableDistanceLegend: true,
-    // 启用罗盘环
-    enableCompassRing: true,
 
-    // 自定义选项示例
-    defaultResetView: {
-        orientation: {
-            heading: Cesium.Math.toRadians(0),
-            pitch: Cesium.Math.toRadians(-90),
-            roll: 0.0
-        }
-    },
-    // 更多可用配置...
-};
+// 配置导航控件选项（JavaScript对象格式）
+// const navigationOptions = {
+//     // 启用指南针
+//     enableCompass: true,
+//     // 启用缩放控件
+//     enableZoomControls: true,
+//     // 启用距离图例
+//     enableDistanceLegend: true,
+//     // 启用罗盘环
+//     enableCompassRing: true,
+//
+//     // 自定义选项示例
+//     defaultResetView: {
+//         orientation: {
+//             heading: Cesium.Math.toRadians(0),
+//             pitch: Cesium.Math.toRadians(-90),
+//             roll: 0.0
+//         }
+//     },
+//     // 更多可用配置...
+// };
 const App = () => {
     const [viewerState, setViewer] = useState(null);
     const [selectedTime, setSelectedTime] = useState('2017-05-01');
@@ -87,9 +99,6 @@ const App = () => {
             ),
         });
 
-        // const dataSource = await Cesium.GeoJsonDataSource.load("../public/geoJson/china_boundary.json");
-        // await viewer.dataSources.add(dataSource);
-
         //抗锯齿
         viewer.scene.postProcessStages.fxaa.enabled = true;
 
@@ -134,7 +143,7 @@ const App = () => {
 
     useEffect(() => {
         // 初始化Cesium
-        Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjdlNTE2Mi05MjE4LTQ1OGMtOGQ1ZS0wODdiNzI5YWQxYzYiLCJpZCI6MjI5NDYzLCJpYXQiOjE3MjEzOTA3OTR9.Vyt-kvvNogPDPw4y74AMwsJDHUUBuhHtwyGDuCBDtSw"
+        Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjdlNTE2Mi05MjE4LTQ1OGMtOGQ1ZS0wODdiNzI5YWQxYzYiLCJpZCI6MjI5NDYzLCJpYXQiOjE3MjEzOTA3OTR9.Vyt-kvvNogPDPw4y74AMwsJDHUUBuhHtwyGDuCBDtSw";
         let viewer;
         const fn = async () => {
             viewer = await createViewer();

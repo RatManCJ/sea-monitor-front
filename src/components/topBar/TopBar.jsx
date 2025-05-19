@@ -34,7 +34,7 @@ const TopBar = ({onTimeChange, viewer}) => {
             }}>
                 <LayerMenu viewer={viewer} />
                 <SourceMenu viewer={viewer}/>
-                <AnalysisMenu />
+                <AnalysisMenu viewer={viewer} onTimeChange={onTimeChange} />
             </div>
             <div className={styles.topBarContent}>
                 <div className={styles.navItems}>

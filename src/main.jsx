@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App'
 import './baseStyle.css'
 
+window.Cesium = Cesium;
 createRoot(document.getElementById('root')).render(
     <BrowserRouter>
         <App />

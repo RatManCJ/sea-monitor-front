@@ -1,32 +1,120 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from 'antd';
-import analysisImg from '../../../assets/map_logo/t_map_3.png';
+import { Button, Switch } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+import { getAllCityByTime, getDataByCityAndYear } from "../../../apis/sea-quality/index.js";
 
-const AnalysisMenu = () => {
+const AnalysisMenu = ({ viewer, onTimeChange }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [heatmapEnabled, setHeatmapEnabled] = useState(false); // 开关状态
     const containerRef = useRef(null);
 
     useEffect(() => {
-        /**
-         * 关闭下拉菜单的处理函数。
-         */
         const handleClickOutside = (event) => {
             if (containerRef.current && !containerRef.current.contains(event.target)) {
                 setIsOpen(false);
             }
         };
 
-        // 绑定事件，当窗口被点击时触发
         window.addEventListener('mousedown', handleClickOutside);
-
-        // 清理事件监听器
-        return () => {
-            window.removeEventListener('mousedown', handleClickOutside);
-        };
+        return () => window.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const handleRenderHeatmap = async () => {
+        if (!heatmapEnabled) return null;
+
+        const waterQualityClassifications = ['二类', '三类', '四类', '劣四类'];
+
+        for (const waterQualityClassification of waterQualityClassifications) {
+            try {
+                const response = await getAllCityByTime(onTimeChange, waterQualityClassification);
+                if (!Array.isArray(response.data)) {
+                    console.error("Expected response.data to be an array", response);
+                    continue;
+                }
+                for (const city of response.data) {
+                    console.log(city);
+                    // renderHeatmap(city, '2017-05-01 00:00:00', waterQualityClassification);
+                    await renderHeatmap(city, onTimeChange, waterQualityClassification);
+                }
+            } catch (error) {
+                console.error(`Error fetching data for ${waterQualityClassification}:`, error);
+            }
+        }
+
+        return (
+            <div style={{ marginTop: 16 }}>
+                <p style={{ color: '#ffffff' }}>热力图已启用</p>
+            </div>
+        );
+    };
+
+    async function renderHeatmap(city, time, waterQualityClassification) {
+        try {
+            const response = await getDataByCityAndYear(city, time, waterQualityClassification);
+
+            let _south = 90, _north = -90, _east = -180, _west = 180;
+
+            response.data.forEach(location => {
+                let lat = parseFloat(location.latitude);
+                let lng = parseFloat(location.longitude);
+
+                if (lat > _north) _north = lat;
+                if (lat < _south) _south = lat;
+                if (lng > _east) _east = lng;
+                if (lng < _west) _west = lng;
+            });
+
+            let _value;
+
+            switch (waterQualityClassification) {
+                case '劣四类':
+                    _value = 700;
+                    break;
+                case '四类':
+                    _value = 500;
+                    break;
+                case '三类':
+                    _value = 300;
+                    break;
+                case '二类':
+                    _value = 150;
+                    break;
+            }
+
+            let points = response.data.map(location => {
+                return { x: location.longitude, y: location.latitude, value: _value };
+            });
+
+            let cesiumHeatmap = CesiumHeatmap.create(
+                viewer,
+                {
+                    west: _west,
+                    south: _south,
+                    east: _east,
+                    north: _north
+                },
+                {
+                    radius: 300,
+                    maxOpacity: 1,
+                    minOpacity: 0,
+                    blur: 1
+                }
+            );
+
+            cesiumHeatmap.setWGS84Data(0, 1200, points);
+        } catch (error) {
+            console.error(`Error rendering heatmap for ${city}:`, error);
+        }
+    }
+
+    useEffect(() => {
+        if (heatmapEnabled) {
+            handleRenderHeatmap();
+        }
+    }, [heatmapEnabled]);
+
     return (
-        <div style={{ position: 'relative', zIndex: isOpen ? 2000 : 'auto' }} ref={containerRef}>
+        <div style={{ position: 'relative' }} ref={containerRef}>
             <Button
                 type={isOpen ? 'primary' : 'default'}
                 onClick={() => setIsOpen(!isOpen)}
@@ -37,18 +125,30 @@ const AnalysisMenu = () => {
                 <div style={{
                     position: 'absolute',
                     top: 70,
-                    left: 0, // 考虑到侧边栏宽度为300px，这里设置left为300px以避免遮挡
-                    zIndex: 2001, // 确保这个值大于侧边栏的 z-index
+                    left: 0,
                     background: '#fff',
                     padding: 16,
                     borderRadius: 8,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    backgroundColor: 'rgba(7,26,1,0.6)',
+                    width: '300px',
                 }}>
-                    <img
-                        src={analysisImg}
-                        alt="分析工具"
-                        style={{ width: 200, height: 150, objectFit: 'cover' }}
+                    <Button
+                        type="text"
+                        shape="circle"
+                        icon={<CloseOutlined />}
+                        onClick={() => setIsOpen(false)}
+                        style={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            zIndex: 10,
+                        }}
                     />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+                        <span style={{ color: '#ffffff' }}>渲染热力图</span>
+                        <Switch checked={heatmapEnabled} onChange={(checked) => setHeatmapEnabled(checked)} />
+                    </div>
                 </div>
             )}
         </div>

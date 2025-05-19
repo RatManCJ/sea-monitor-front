@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import cesium from 'vite-plugin-cesium';
+// import cesium from 'vite-plugin-cesium';
 // @ts-ignore
 import legacy from '@vitejs/plugin-legacy';
 // @ts-ignore
@@ -10,7 +10,7 @@ import path from 'path';
 export default defineConfig({
   plugins: [
       react(),
-    cesium(),
+    // cesium(),
     legacy({
       targets: ['defaults', 'not IE 11', 'last 2 versions', '> 1%', 'Android >= 4.4'],
     }),

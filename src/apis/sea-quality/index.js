@@ -12,3 +12,18 @@ export function getDataBySiteInfo(site){
         site
     });
 }
+
+export function getDataByCityAndYear(city, time, waterQualityClassification) {
+    return request.get('get-data-by-year-city', {
+        city,
+        time,
+        waterQualityClassification
+    });
+}
+
+export function getAllCityByTime(time, waterQualityClassification) {
+    return request.get('get-all-city-by-time', {
+        time,
+        waterQualityClassification
+    });
+}

@@ -21,7 +21,6 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
 
     try {
         // 调用 API 获取点位信息 (仍然使用点位编号进行查询)
-        console.log(`正在查询点位编号为 ${site} 的信息`);
         const response = await getDataBySiteInfo(site);
 
         console.log(response.data);
