@@ -1,5 +1,13 @@
 import * as Cesium from 'cesium';
-import {Cartographic, Ion, Math as cesiumMath, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer} from 'cesium';
+import {
+    Cartographic, ImageryLayer,
+    Ion,
+    Math as cesiumMath,
+    ScreenSpaceEventHandler,
+    ScreenSpaceEventType,
+    Viewer,
+    WebMapTileServiceImageryProvider
+} from 'cesium';
 import {useEffect, useState} from "react";
 import {ConfigProvider, theme} from 'antd';
 import styles from './App.module.scss';
@@ -8,7 +16,7 @@ import SideBar from "@components/sideBar/SideBar.jsx";
 import {Route, Routes} from 'react-router-dom';
 import BottomBar from "@components/bottom/BottomBar.jsx";
 import RightSideBar from "@components/right/RightSideBar.jsx";
-import DataRender from "@components/render/DataRender.jsx";
+import geoJson from '../public/geojson/china_division.json';
 // 配置导航控件选项（JavaScript对象格式）
 const navigationOptions = {
     // 启用指南针
@@ -64,20 +72,23 @@ const App = () => {
             fullscreenButton: false,
             shouldAnimate: true,
 
-            // baseLayer: new ImageryLayer(
-            //   new WebMapTileServiceImageryProvider({
-            //       url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=ea280c007d7d86ab4698216ac22c5b7f',
-            //       layer: 'tdtBasicLayer',
-            //       style: 'default',
-            //       format: 'tiles',
-            //       tileMatrixSetID: 'w',
-            //       subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
-            //       maximumLevel: 18,
-            //       credit: new Cesium.Credit('天地图')
-            //   }),
-            //   {}
-            // ),
+            baseLayer: new ImageryLayer(
+              new WebMapTileServiceImageryProvider({
+                  url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=ea280c007d7d86ab4698216ac22c5b7f',
+                  layer: 'tdtBasicLayer',
+                  style: 'default',
+                  format: 'tiles',
+                  tileMatrixSetID: 'w',
+                  subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+                  maximumLevel: 18,
+                  credit: new Cesium.Credit('天地图')
+              }),
+              {}
+            ),
         });
+
+        // const dataSource = await Cesium.GeoJsonDataSource.load("../public/geoJson/china_boundary.json");
+        // await viewer.dataSources.add(dataSource);
 
         //抗锯齿
         viewer.scene.postProcessStages.fxaa.enabled = true;
@@ -116,12 +127,6 @@ const App = () => {
         handler.setInputAction((e) => {
             const clickPosition = viewer.scene.camera.pickEllipsoid(e.position);
             const randiansPos = Cartographic.fromCartesian(clickPosition);
-            console.log(
-                "经度：" +
-                cesiumMath.toDegrees(randiansPos.longitude) +
-                ", 纬度：" +
-                cesiumMath.toDegrees(randiansPos.latitude)
-            );
         }, ScreenSpaceEventType.LEFT_CLICK);
         return viewer;
     }
@@ -189,10 +194,9 @@ const App = () => {
                 }}>
 
                 {/* 顶部菜单栏*/}
-                <TopBar onTimeChange={handleTimeChange}/>
+                <TopBar onTimeChange={handleTimeChange} viewer={viewerState} />
                 {/* 左侧菜单栏*/}
                 <SideBar/>
-                {/*<RightSideBar />*/}
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>

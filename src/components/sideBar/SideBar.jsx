@@ -70,7 +70,7 @@ const SideBar = () => {
                  style={{
                      position: 'fixed',
                      bottom: '20px',
-                     zIndex: 1000,
+                     zIndex: 1,
                      backgroundColor: 'rgba(0, 0, 0, 0.1)',
                      backdropFilter: 'blur(1px)',
                      borderRadius: '8px',
