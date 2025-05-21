@@ -37,7 +37,7 @@ const renderPoints = async (selectedTime, viewer,  onPointSelect) => {
             item.waterQualityClassification
         ));
 
-        viewer.entities.removeAll();
+        // viewer.entities.removeAll();
 
         const dataSize = data.length;
         let pointSize = 3; // 默认点大小

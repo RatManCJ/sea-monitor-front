@@ -10,6 +10,8 @@
 // } from 'cesium';
 // 不再使用 import，直接使用全局 Cesium 对象
 
+import {imageLayer} from "./const/index.jsx";
+
 const {
     Cartographic,
     ImageryLayer,
@@ -86,7 +88,7 @@ const App = () => {
 
             baseLayer: new ImageryLayer(
               new WebMapTileServiceImageryProvider({
-                  url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=ea280c007d7d86ab4698216ac22c5b7f',
+                  url: imageLayer,
                   layer: 'tdtBasicLayer',
                   style: 'default',
                   format: 'tiles',
@@ -98,6 +100,14 @@ const App = () => {
               {}
             ),
         });
+
+        viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+            url: "http://t0.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&tk=ea280c007d7d86ab4698216ac22c5b7f",
+            layer: "tdtAnnoLayer",
+            style: "default",
+            format: "image/jpeg",
+            tileMatrixSetID: "GoogleMapsCompatible"
+        }));
 
         //抗锯齿
         viewer.scene.postProcessStages.fxaa.enabled = true;
@@ -203,7 +213,7 @@ const App = () => {
                 }}>
 
                 {/* 顶部菜单栏*/}
-                <TopBar onTimeChange={handleTimeChange} viewer={viewerState} />
+                <TopBar selectedTime={selectedTime} viewer={viewerState} />
                 {/* 左侧菜单栏*/}
                 <SideBar/>
                 <div className={styles.visualizationContainer}>

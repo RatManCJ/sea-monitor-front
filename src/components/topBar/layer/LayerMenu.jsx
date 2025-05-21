@@ -4,10 +4,17 @@ import DarkGaoDe from '../../../assets/map_logo/g_map_1_s.png';
 import Vector from '../../../assets/map_logo/g_map_1.png';
 import Image from '../../../assets/map_logo/t_map_2.png';
 import Topographic from '../../../assets/map_logo/t_map_3.png';
-import {imageLayer, baseLayer, topographicLayer, cesiumLayer} from '../../../const/index.jsx'
+import Annotation from '../../../assets/map_logo/t_map_5.png';
+import {
+    imageLayer,
+    baseLayer,
+    topographicLayer,
+    annotationLayer
+} from '../../../const/index.jsx'
 import * as Cesium from "cesium";
-import { CloseOutlined } from '@ant-design/icons';
-const LayerMenu = ({ viewer }) => {
+import {CloseOutlined} from '@ant-design/icons';
+
+const LayerMenu = ({viewer}) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
 
@@ -27,6 +34,11 @@ const LayerMenu = ({ viewer }) => {
             label: '地形晕渲',
             value: 'topographic',
             imgSrc: Topographic,
+        },
+        {
+            label: '地图注记',
+            value: 'annotation',
+            imgSrc: Annotation,
         },
     ];
 
@@ -84,11 +96,21 @@ const LayerMenu = ({ viewer }) => {
                     subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
                     maximumLevel: 18,
                 }))
+            case 'annotation':
+                viewer.imageryLayers.addImageryProvider(new window.Cesium.WebMapTileServiceImageryProvider({
+                    url: annotationLayer,
+                    layer: "tdtAnnotationBasicLayer",
+                    style: 'default',
+                    format: 'tiles',
+                    tileMatrixSetID: 'w',
+                    subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
+                    maximumLevel: 18,
+                }))
         }
     };
 
     return (
-        <div style={{ position: 'relative' }} ref={containerRef}>
+        <div style={{position: 'relative'}} ref={containerRef}>
             <Button
                 type={isOpen ? 'primary' : 'default'}
                 onClick={() => setIsOpen(!isOpen)}
@@ -111,7 +133,7 @@ const LayerMenu = ({ viewer }) => {
                     <Button
                         type="text"
                         shape="circle"
-                        icon={<CloseOutlined />}
+                        icon={<CloseOutlined/>}
                         onClick={() => setIsOpen(false)}
                         style={{
                             position: 'absolute',
@@ -121,7 +143,7 @@ const LayerMenu = ({ viewer }) => {
                         }}
                     />
                     <div>
-                        <h2 style={{ margin: 0, color: '#ffffff', fontSize: '18px' }}>天地图</h2>
+                        <h2 style={{margin: 0, color: '#ffffff', fontSize: '18px'}}>天地图</h2>
                     </div>
                     <Radio.Group onChange={handleSelectChange} defaultValue="image">
                         <div style={{
@@ -144,8 +166,8 @@ const LayerMenu = ({ viewer }) => {
                                              height: '100px',
                                              objectFit: 'cover',
                                              marginBottom: '8px'
-                                         }} />
-                                    <Radio value={option.value} style={{ whiteSpace: 'nowrap' }}>
+                                         }}/>
+                                    <Radio value={option.value} style={{whiteSpace: 'nowrap'}}>
                                         {option.label}
                                     </Radio>
                                 </div>

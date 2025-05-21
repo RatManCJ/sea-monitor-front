@@ -44,7 +44,7 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
         ));
 
         // 清空之前的实体
-        viewer.entities.removeAll();
+        // viewer.entities.removeAll();
         queriedEntities = {}; // 清空之前的实体引用
         let firstPosition = null;
 
@@ -60,7 +60,7 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
             const entity = viewer.entities.add({
                 position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
                 point: {
-                    pixelSize: 30,
+                    // pixelSize: 30,
                     color: getColorByWaterQuality(pointInfo.waterQualityClassification),
                     outlineColor: Cesium.Color.WHITE,
                     outlineWidth: 2,
@@ -77,22 +77,22 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
                 properties: pointInfo
             });
             queriedEntities[pointInfo.site] = entity;
-            firstPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude, 500);
+            firstPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude, 20000);
             break;
         }
 
-        // if (firstPosition) {
-        //     viewer.camera.flyTo({
-        //         destination: firstPosition,
-        //         orientation: {
-        //             heading: Cesium.Math.toRadians(0),
-        //             pitch: Cesium.Math.toRadians(-90),
-        //             roll: 0.0
-        //         }
-        //     });
-        // } else {
-        //     message.warn(`未找到点位编号为 ${site} 的有效坐标信息。`);
-        // }
+        if (firstPosition) {
+            viewer.camera.flyTo({
+                destination: firstPosition,
+                orientation: {
+                    heading: Cesium.Math.toRadians(0),
+                    pitch: Cesium.Math.toRadians(-90),
+                    roll: 0.0
+                }
+            });
+        } else {
+            message.warn(`未找到点位编号为 ${site} 的有效坐标信息。`);
+        }
         return points;
     } catch (error) {
         console.error('查询点位信息时发生错误:', error);

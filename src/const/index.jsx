@@ -10,4 +10,4 @@ export const topographicLayer = 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + key
 
 export const baseLayer = 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=' + key;
 
-export const cesiumLayer = 'https://[ t0-t7 ].tianditu.gov.cn/mapservice/swdx?tk=' + key;
+export const annotationLayer = 'http://t0.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&tk=' + key;

@@ -44,6 +44,7 @@ const createColumn = (container, data) => {
         xField: 'sea',
         yField: 'value',
         seriesField: 'type',
+        color: ({ type }) => getChartColorForWaterType(type), // 根据水质类型设置颜色
         label: {
             position: 'middle', // 'top', 'bottom', 'middle'
         },
@@ -79,6 +80,21 @@ const createColumn = (container, data) => {
     return columnPlot;
 };
 
+// 定义一个函数，用于返回基于水质类型的G2Plot可用的颜色格式
+const getChartColorForWaterType = (type) => {
+    switch(type) {
+        case '一类':
+            return '#00FF00'; // Green for '一类'
+        case '二类':
+            return '#FFFF00'; // Yellow for '二类'
+        case '三类':
+            return '#FFA500'; // Orange for '三类'
+        case '四类':
+            return '#FF0000'; // Red for '四类'
+        default:
+            return '#808080'; // Gray for any other type
+    }
+};
 const WaterQualityComparison = ({data}) => {
     const containerRef = useRef(null);
     const chartInstanceRef = useRef(null);

@@ -12,7 +12,7 @@ const createChart = (container, data) => {
         xField: 'year',
         yField: 'value',
         seriesField: 'type',
-        // color: ['#6897a7', '#8bc0d6', '#60d7a7', '#dedede', '#fedca9', '#fab36f', '#d96d6f'],
+        color: ({ type }) => getChartColorForWaterType(type), // 根据水质类型设置颜色
         xAxis: {
             type: 'time',
             mask: 'YYYY',
@@ -31,6 +31,20 @@ const createChart = (container, data) => {
     chart.render();
 };
 
+const getChartColorForWaterType = (type) => {
+    switch(type) {
+        case '一类':
+            return '#00FF00'; // Green for '一类'
+        case '二类':
+            return '#FFFF00'; // Yellow for '二类'
+        case '三类':
+            return '#FFA500'; // Orange for '三类'
+        case '四类':
+            return '#FF0000'; // Red for '四类'
+        default:
+            return '#808080'; // Gray for any other type
+    }
+};
 
 const WaterQualityTrend = ({data}) => {
     const containerRef = useRef(null); // 这个 ref 要绑定到 div 上
@@ -40,9 +54,6 @@ const WaterQualityTrend = ({data}) => {
         if (data && data.length > 0 && containerRef.current) {
             if (!chartInstanceRef.current) {
                 chartInstanceRef.current = createChart(containerRef.current, data);
-            } else {
-                // 如果数据变化了，可以更新图表
-                chartInstanceRef.current.changeData(data);
             }
         }
 

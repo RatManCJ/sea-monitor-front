@@ -3,7 +3,7 @@ import { Button, Switch } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { getAllCityByTime, getDataByCityAndYear } from "../../../apis/sea-quality/index.js";
 
-const AnalysisMenu = ({ viewer, onTimeChange }) => {
+const AnalysisMenu = ({ viewer, selectedTime }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [heatmapEnabled, setHeatmapEnabled] = useState(false); // 开关状态
     const containerRef = useRef(null);
@@ -26,7 +26,9 @@ const AnalysisMenu = ({ viewer, onTimeChange }) => {
 
         for (const waterQualityClassification of waterQualityClassifications) {
             try {
-                const response = await getAllCityByTime(onTimeChange, waterQualityClassification);
+                console.log(`Fetching data for ${waterQualityClassification}`);
+                console.log(`Fetching data for ${selectedTime + " 00:00:00"}`);
+                const response = await getAllCityByTime(selectedTime + " 00:00:00", waterQualityClassification);
                 if (!Array.isArray(response.data)) {
                     console.error("Expected response.data to be an array", response);
                     continue;
@@ -34,7 +36,7 @@ const AnalysisMenu = ({ viewer, onTimeChange }) => {
                 for (const city of response.data) {
                     console.log(city);
                     // renderHeatmap(city, '2017-05-01 00:00:00', waterQualityClassification);
-                    await renderHeatmap(city, onTimeChange, waterQualityClassification);
+                    await renderHeatmap(city, selectedTime + " 00:00:00", waterQualityClassification);
                 }
             } catch (error) {
                 console.error(`Error fetching data for ${waterQualityClassification}:`, error);
@@ -95,8 +97,8 @@ const AnalysisMenu = ({ viewer, onTimeChange }) => {
                 },
                 {
                     radius: 300,
-                    maxOpacity: 1,
-                    minOpacity: 0,
+                    maxOpacity: 5,
+                    minOpacity: 0.5,
                     blur: 1
                 }
             );

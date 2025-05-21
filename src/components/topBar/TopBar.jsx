@@ -12,9 +12,8 @@ import analysisImg from '../../assets/map_logo/t_map_3.png';
 import LayerMenu from "./layer/LayerMenu.jsx";
 import SourceMenu from "./source/SourceMenu.jsx";
 import AnalysisMenu from "./analysis/AnalysisMenu.jsx";
-const TopBar = ({onTimeChange, viewer}) => {
-    const [selectedTime, setSelectedTime] = useState('2017-05-01'); // 默认时间
-    const [isTreeSelectVisible, setIsTreeSelectVisible] = useState(true); // 控制选择框是否可见
+const TopBar = ({selectedTime, viewer}) => {
+    // const [isTreeSelectVisible, setIsTreeSelectVisible] = useState(true); // 控制选择框是否可见
     const {token} = useToken();
 
     const [value, setValue] = useState();
@@ -34,7 +33,7 @@ const TopBar = ({onTimeChange, viewer}) => {
             }}>
                 <LayerMenu viewer={viewer} />
                 <SourceMenu viewer={viewer}/>
-                <AnalysisMenu viewer={viewer} onTimeChange={onTimeChange} />
+                <AnalysisMenu viewer={viewer} selectedTime={selectedTime} />
             </div>
             <div className={styles.topBarContent}>
                 <div className={styles.navItems}>
