@@ -23,8 +23,6 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
         // 调用 API 获取点位信息 (仍然使用点位编号进行查询)
         const response = await getDataBySiteInfo(site);
 
-        console.log(response.data);
-
         const points = response.data.map(item => new WaterQuality(
             item.id,
             item.sea,
@@ -81,18 +79,18 @@ const queryDataByInfo = async (searchInfo, viewer) => { // 修改参数为 searc
             break;
         }
 
-        if (firstPosition) {
-            viewer.camera.flyTo({
-                destination: firstPosition,
-                orientation: {
-                    heading: Cesium.Math.toRadians(0),
-                    pitch: Cesium.Math.toRadians(-90),
-                    roll: 0.0
-                }
-            });
-        } else {
-            message.warn(`未找到点位编号为 ${site} 的有效坐标信息。`);
-        }
+        // if (firstPosition) {
+        //     viewer.camera.flyTo({
+        //         destination: firstPosition,
+        //         orientation: {
+        //             heading: Cesium.Math.toRadians(0),
+        //             pitch: Cesium.Math.toRadians(-90),
+        //             roll: 0.0
+        //         }
+        //     });
+        // } else {
+        //     message.warn(`未找到点位编号为 ${site} 的有效坐标信息。`);
+        // }
         return points;
     } catch (error) {
         console.error('查询点位信息时发生错误:', error);

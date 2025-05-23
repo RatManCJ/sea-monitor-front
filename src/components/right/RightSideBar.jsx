@@ -2,11 +2,12 @@ import styles from './RightSideBar.module.scss';
 import {useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {queryDataByInfo} from "@components/render/data/queryDataByInfo.js";
-import {Button, Card, Input, message, Select, Space} from "antd";
+import {Button, Card, FloatButton, Input, message, Select, Space} from "antd";
 import {transformData} from "@components/render/data/transformData.js";
 import renderPoints from "@components/render/data/renderPoints.js";
-import {SearchOutlined} from "@ant-design/icons";
+import {QuestionCircleOutlined, SearchOutlined, SyncOutlined} from "@ant-design/icons";
 import ColumnRender from "@components/render/ColumnRender.jsx";
+import WaterQualityTable from "@components/right/WaterQualityTable.jsx";
 
 
 const RightSideBar = ({viewer}) => {
@@ -67,7 +68,6 @@ const RightSideBar = ({viewer}) => {
 
     const handleSearch = async () => {
         try {
-            console.log("siteQuery : " + siteQuery);
             const data = await queryDataByInfo(siteQuery, viewer);
 
             if (!data || data.length === 0) {
@@ -80,7 +80,6 @@ const RightSideBar = ({viewer}) => {
             setSiteInfo(foundSite);
             const transformedData = transformData(data, metricData);
             setMetricData(transformedData); // 更新状态
-            message.success(`查询成功：点位编号 ${foundSite.site}`);
         } catch (error) {
             console.error("查询点位信息时发生错误:", error);
             message.error("查询点位信息失败，请稍后再试");
@@ -208,7 +207,117 @@ const RightSideBar = ({viewer}) => {
                         <div style={{marginTop: 8, color: 'white'}}>
                             <p><strong>点位编号：</strong>{siteInfo.site}</p>
                             <p><strong>经度：</strong>{siteInfo.longitude}</p>
-                            <p><strong>纬度：</strong>{siteInfo.latitude}</p>
+                            <p><strong>PH：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.ph >= 7.8 && siteInfo.ph <= 8.5)
+                                            ? 'green'
+                                            : (siteInfo.ph >= 6.8 && siteInfo.ph <= 8.8)
+                                                ? 'orange'
+                                                : 'red'
+                                }}>
+                                    {siteInfo.ph}||一二类：7.8-8.5;三四类：6.8-8.8
+                                </span>
+                            </p>
+                            <p><strong>溶解氧：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.dissolvedOxygen >= 6)
+                                            ? 'green'
+                                            : (siteInfo.dissolvedOxygen >= 5)
+                                                ? 'yellow'
+                                                : (siteInfo.dissolvedOxygen >= 4)
+                                                    ? 'orange'
+                                                    : (siteInfo.dissolvedOxygen >= 3)
+                                                        ? 'red'
+                                                        : 'gray'
+                                }}>
+                                    {siteInfo.dissolvedOxygen}||一类：≥6;二类：≥5;三类：≥4;四类：≥3;
+                                </span>
+                            </p>
+                            <p>
+                                <strong>化学需氧量：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.chemicalOxygenDemand <= 2)
+                                            ? 'green'
+                                            : (siteInfo.chemicalOxygenDemand <= 3)
+                                                ? 'yellow'
+                                                : (siteInfo.chemicalOxygenDemand <= 4)
+                                                    ? 'orange'
+                                                    : (siteInfo.chemicalOxygenDemand <= 5)
+                                                        ? 'red'
+                                                        : 'gray'
+                                }}>
+    {siteInfo.chemicalOxygenDemand}
+  </span>
+                            </p>
+
+                            <p>
+                                <strong>无机氮：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.inorganicNitrogen <= 0.2)
+                                            ? 'green'
+                                            : (siteInfo.inorganicNitrogen <= 0.3)
+                                                ? 'yellow'
+                                                : (siteInfo.inorganicNitrogen <= 0.4)
+                                                    ? 'orange'
+                                                    : (siteInfo.inorganicNitrogen <= 0.5)
+                                                        ? 'red'
+                                                        : 'gray'
+                                }}>
+    {siteInfo.inorganicNitrogen}||一类：≤2；二类：≤3；三类：≤4；四类：≤5
+  </span>
+                            </p>
+
+                            <p>
+                                <strong>活性磷酸盐：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.activePhosphate <= 0.015)
+                                            ? 'green'
+                                            : (siteInfo.activePhosphate <= 0.03)
+                                                ? 'yellow'
+                                                : (siteInfo.activePhosphate <= 0.045)
+                                                    ? 'orange'
+                                                    : 'red'
+                                }}>
+    {siteInfo.activePhosphate}||一类：≤0.015；二、三类：≤0.03；四类：≤0.045
+  </span>
+                            </p>
+
+                            <p>
+                                <strong>石油类：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.petroleum <= 0.05)
+                                            ? 'green'
+                                            : (siteInfo.petroleum <= 0.3)
+                                                ? 'yellow'
+                                                : (siteInfo.petroleum <= 0.5)
+                                                    ? 'orange'
+                                                    : 'red'
+                                }}>
+    {siteInfo.petroleum}||一类：≤0.05；二类：≤0.3；三类：≤0.5
+  </span>
+                            </p>
+                            <p><strong>水质类别：</strong>
+                                <span style={{
+                                    color:
+                                        (siteInfo.waterQualityClassification === '一类')
+                                            ? 'green'
+                                            : (siteInfo.waterQualityClassification === '二类')
+                                                ? 'yellow'
+                                                : (siteInfo.waterQualityClassification === '三类')
+                                                    ? 'orange'
+                                                    : (siteInfo.waterQualityClassification === '四类')
+                                                        ? 'red'
+                                                        : 'gray'
+                                }}>
+                                    {siteInfo.waterQualityClassification}
+                                </span>
+                            </p>
                         </div>
                     )}
                 </div>

@@ -8,7 +8,7 @@
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
   user-select: none;
   position: fixed;
-  bottom: 20px;
+  bottom: 15px;
   left: var(--left-sidebar-width, 310px); /* 默认左侧边栏宽度 */
   right: var(--right-sidebar-width, 310px); /* 默认右侧边栏宽度 */
   width: calc(100% - var(--left-sidebar-width, 310px) - var(--right-sidebar-width, 310px)); /* 动态计算宽度 */

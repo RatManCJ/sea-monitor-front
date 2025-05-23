@@ -58,7 +58,6 @@ const ColumnRender = ({metricData}) => {
     const chartRef = useRef(null);
 
     useEffect(() => {
-        console.log('metricData:', metricData);
         if (containerRef.current && metricData) {
             // 创建图表实例
             chartRef.current = createColumn(containerRef.current, metricData);
