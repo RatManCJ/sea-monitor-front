@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080/water';
 
+const BASE_URL_AI = 'http://localhost:8090/api/v1/ollama';
+
 const instance = axios.create({
     baseURL: BASE_URL,
     timeout: 5000,
@@ -10,6 +12,24 @@ const instance = axios.create({
     },
 });
 
+const instanceAI = axios.create({
+    baseURL: BASE_URL_AI,
+    timeout: 5000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+const createAIRequest = (instanceAI, preUrl) => {
+    return {
+        get: (url, params) => instanceAI.get(`${preUrl}${url}`, { params }),
+        post: (url, data) => instanceAI.post(`${preUrl}${url}`, data),
+        put: (url, data) => instanceAI.put(`${preUrl}${url}`, data),
+        delete: (url, params) => instanceAI.delete(`${preUrl}${url}`, { params }),
+    };
+};
+
+export const defaultAIRequest = createAIRequest(instanceAI, '');
 // 使用高阶函数创建具体的请求对象，传入公共的前置url部分
 const createRequest = (instance, preUrl) => {
     return {

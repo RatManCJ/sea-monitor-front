@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button, Switch } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { getAllCityByTime, getDataByCityAndYear } from "../../../apis/sea-quality/index.js";
+import ChatComponent from "@components/topBar/analysis/chat/ChatComponent.jsx";
 
 const AnalysisMenu = ({ viewer, selectedTime }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -151,6 +152,7 @@ const AnalysisMenu = ({ viewer, selectedTime }) => {
                         <span style={{ color: '#ffffff' }}>渲染热力图</span>
                         <Switch checked={heatmapEnabled} onChange={(checked) => setHeatmapEnabled(checked)} />
                     </div>
+                    <ChatComponent/>
                 </div>
             )}
         </div>
