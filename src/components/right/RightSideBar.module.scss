@@ -3,9 +3,9 @@
   color: white; /* 设置全局字体颜色为白色 */
   position: fixed;
   right: 0; /* 固定在右侧 */
-  top: 80px; /* 与顶栏高度匹配 */
+  top: 70px; /* 与顶栏高度匹配 */
   bottom: 0;
-  width: 300px;
+  width: 360px;
   background: var(--color-bg-container);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15); /* 阴影方向调整 */
   transition: width 0.3s ease;

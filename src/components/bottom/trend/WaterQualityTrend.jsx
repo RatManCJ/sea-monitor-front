@@ -66,7 +66,7 @@ const WaterQualityTrend = ({data}) => {
     }, [data]);
 
     return (
-        <div style={{width: '650px', height: '250px'}}>
+        <div style={{width: '650px', height: '350px'}}>
             {/* 必须指定 ref 和 id，否则 G2Plot 找不到容器 */}
             <div ref={containerRef} style={{width: '620px', height: '100%'}}/>
         </div>

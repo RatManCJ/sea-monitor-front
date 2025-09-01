@@ -65,6 +65,7 @@ const createColumn = (container, data) => {
             max: yAxisMax, // 设置 Y 轴的最大值
             tickInterval: tickInterval, // 设置 Y 轴的刻度间隔
         },
+        legend: false,
         meta: {
             type: {
                 alias: '类别',
@@ -118,7 +119,7 @@ const WaterQualityComparison = ({data}) => {
     }, [data]); // 监听 data 的变化
 
     return(
-        <div style={{width: '100%', height: '200px'}}>
+        <div style={{width: '100%', height: '350px'}}>
             <div ref={containerRef} style={{width: '100%', height: '100%'}}/>
         </div>
         )

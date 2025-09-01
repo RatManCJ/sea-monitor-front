@@ -4,24 +4,24 @@ const Legend = () => {
         <div style={styles.legendContainer}>
             <h4 style={styles.legendTitle}>水质分类图例</h4>
             <div style={styles.legendItem}>
-                <div style={{ ...styles.colorBox, backgroundColor: 'green' }}></div>
-                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>一类水质：优质水，适合饮用</span>
+                <div style={{ ...styles.colorBox, backgroundColor: '#00FF00' }}></div>
+                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>一类：优质水，适合饮用</span>
             </div>
             <div style={styles.legendItem}>
-                <div style={{ ...styles.colorBox, backgroundColor: 'yellow' }}></div>
-                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>二类水质：良好水，适合游泳和娱乐活动</span>
+                <div style={{ ...styles.colorBox, backgroundColor: '#FFFF00' }}></div>
+                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>二类：良好水，适合游泳和娱乐活动</span>
             </div>
             <div style={styles.legendItem}>
-                <div style={{ ...styles.colorBox, backgroundColor: 'orange' }}></div>
-                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>三类水质：一般水，适合工业用水</span>
+                <div style={{ ...styles.colorBox, backgroundColor: '#FFA500' }}></div>
+                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>三类：一般水，适合工业用水</span>
             </div>
             <div style={styles.legendItem}>
-                <div style={{ ...styles.colorBox, backgroundColor: 'red' }}></div>
-                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>四类水质：较差水，需处理后使用</span>
+                <div style={{ ...styles.colorBox, backgroundColor: '#FF0000' }}></div>
+                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>四类：较差水，需处理后使用</span>
             </div>
             <div style={styles.legendItem}>
-                <div style={{ ...styles.colorBox, backgroundColor: 'gray' }}></div>
-                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>其他：污染水，不建议使用</span>
+                <div style={{ ...styles.colorBox, backgroundColor: '#808080' }}></div>
+                <span style={{ color: '#ffffff', fontSize: '14px', opacity: 0.8 }}>劣四类：污染水，不建议使用</span>
             </div>
         </div>
     );
@@ -31,13 +31,14 @@ const Legend = () => {
 const styles = {
     legendContainer: {
         position: 'fixed',
-        bottom: '150px', // 放置在左下角
-        right: '20px', // 距离右侧的距离
-        background: 'rgba(0, 0, 0, 0.7)', // 背景颜色
+        bottom: '100px', // 放置在左下角
+        right: '290px', // 距离右侧的距离
+        // background: 'rgba(0, 0, 0, 0.7)', // 背景颜色
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
         padding: '15px 20px', // 内边距
         borderRadius: '8px', // 圆角
-        zIndex: 1000, // 层级
-        backdropFilter: 'blur(5px)', // 背景模糊效果
+        zIndex: 2001, // 层级
+        // backdropFilter: 'blur(5px)', // 背景模糊效果
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // 阴影
     },
     legendTitle: {

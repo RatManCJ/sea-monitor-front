@@ -52,9 +52,9 @@ const SourceMenu = ({viewer}) => {
         const loadLayer = async (layerName, url) => {
             if (layers[layerName]) {
                 removeLayer(layerName); // 防止重复加载
-                const dataSource = await window.Cesium.GeoJsonDataSource.load(url, {});
-                dataSource.name = layerName;
-                await viewer.dataSources.add(dataSource);
+                const dataSource = await window.Cesium.GeoJsonDataSource.load(url, {}); // 数据读取
+                dataSource.name = layerName; // 设置数据源名称
+                await viewer.dataSources.add(await window.Cesium.GeoJsonDataSource.load(url, {})); // 加载数据源
             } else {
                 removeLayer(layerName);
             }

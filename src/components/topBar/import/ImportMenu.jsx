@@ -14,7 +14,7 @@ import {
 import * as Cesium from "cesium";
 import {CloseOutlined} from '@ant-design/icons';
 
-const LayerMenu = ({viewer}) => {
+const ImportMenu = ({viewer}) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
 
@@ -101,6 +101,7 @@ const LayerMenu = ({viewer}) => {
                     url: annotationLayer,
                     layer: "tdtAnnotationBasicLayer",
                     style: 'default',
+                    format: 'tiles',
                     tileMatrixSetID: 'w',
                     subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
                     maximumLevel: 18,
@@ -114,7 +115,7 @@ const LayerMenu = ({viewer}) => {
                 type={isOpen ? 'primary' : 'default'}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                图源
+                导入
             </Button>
             {isOpen && (
                 <div style={{
@@ -179,4 +180,4 @@ const LayerMenu = ({viewer}) => {
     );
 };
 
-export default LayerMenu;
+export default ImportMenu;

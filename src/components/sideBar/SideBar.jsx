@@ -7,28 +7,31 @@ import WaterQualityComparison from "@components/sideBar/comparison/WaterQualityC
 const {TreeNode} = TreeSelect;
 
 const comparisonMockData = [
-    {sea: '东海', type: '一类', value: 30},
-    {sea: '东海', type: '二类', value: 20},
-    {sea: '东海', type: '三类', value: 15},
-    {sea: '东海', type: '四类', value: 25},
+    {sea: '江苏', type: '一类', value: 2},
+    {sea: '江苏', type: '二类', value: 16},
+    {sea: '江苏', type: '三类', value: 19},
+    {sea: '江苏', type: '四类', value: 16},
+    {sea: '江苏', type: '劣四类', value: 3},
 
-    {sea: '南海', type: '一类', value: 40},
-    {sea: '南海', type: '二类', value: 10},
-    {sea: '南海', type: '三类', value: 20},
-    {sea: '南海', type: '四类', value: 15},
+    {sea: '辽宁', type: '一类', value: 77},
+    {sea: '辽宁', type: '二类', value: 8},
+    {sea: '辽宁', type: '三类', value: 14},
+    {sea: '辽宁', type: '四类', value: 3},
+    {sea: '辽宁', type: '劣四类', value: 14},
 
-    {sea: '西海', type: '一类', value: 20},
-    {sea: '西海', type: '二类', value: 30},
-    {sea: '西海', type: '三类', value: 10},
-    {sea: '西海', type: '四类', value: 25},
+    {sea: '山东', type: '一类', value: 81},
+    {sea: '山东', type: '二类', value: 24},
+    {sea: '山东', type: '三类', value: 9},
+    {sea: '山东', type: '四类', value: 10},
+    {sea: '山东', type: '劣四类', value: 4},
 ];
 
 const distributionMockData = [
-    { type: '优质水', value: 10 },
-    { type: '良好水', value: 20 },
-    { type: '一般水', value: 15 },
-    { type: '较差水', value: 5 },
-    { type: '污水', value: 2 },
+    { type: '优质水', value: 77 },
+    { type: '良好水', value: 8 },
+    { type: '一般水', value: 14 },
+    { type: '较差水', value: 3 },
+    { type: '污水', value: 14 },
 ];
 
 // 示例数据源，可以根据实际需求进行调整
@@ -85,11 +88,12 @@ const SideBar = () => {
                     style={{
                         width: '100%',
                         color: 'white',
+                        // height: '100%',
                     }}
                 >
                     {/* 使用卡片包裹多级搜索树、水质饼图和选择器 */}
                     <Card
-                        title="水质信息分布"
+                        title="区域内水质信息占比"
                         headStyle={{
                             borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
                             color: 'white',
@@ -159,7 +163,7 @@ const SideBar = () => {
                         </Select>
                     </Card>
                     <Card
-                        title="水质信息分布"
+                        title="各地水质信息对比"
                         headStyle={{
                             borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
                             color: 'white',
@@ -178,6 +182,7 @@ const SideBar = () => {
                             transition: 'transform 0.2s',
                             borderRadius: '8px',
                             marginBottom: '16px', // 为美观添加的外边距
+                            // height: '750px'
                         }}
                     >
                         {/* 添加多级搜索树 */}
@@ -201,7 +206,7 @@ const SideBar = () => {
                         {/* 水质饼图 */}
                         {/* 调整饼图大小并确保其与其它元素紧凑排列 */}
                         {/*<WaterQualityDistribution data={treeData} style={{height: '200px'}}/>*/}
-                        <WaterQualityComparison data={comparisonMockData} style={{height: '200px'}}/>
+                        <WaterQualityComparison data={comparisonMockData} style={{height: '500px'}}/>
                         {/* 新增：不同海域水质信息对比图表 */}
                         {/*<WaterQualityComparison data={distributionMockData} style={{ height: '200px'}}/>*/}
                         {/* 添加下拉框 */}

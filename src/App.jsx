@@ -11,7 +11,12 @@
 // 不再使用 import，直接使用全局 Cesium 对象
 
 import {imageLayer} from "./const/index.jsx";
-
+import mx from './assets/sky/tycho2t3_80_mx.jpg';
+import my from './assets/sky/tycho2t3_80_my.jpg';
+import mz from './assets/sky/tycho2t3_80_mz.jpg';
+import px from './assets/sky/tycho2t3_80_px.jpg';
+import py from './assets/sky/tycho2t3_80_py.jpg';
+import pz from './assets/sky/tycho2t3_80_pz.jpg';
 const {
     Cartographic,
     ImageryLayer,
@@ -30,28 +35,19 @@ import SideBar from "@components/sideBar/SideBar.jsx";
 import {Route, Routes} from 'react-router-dom';
 import BottomBar from "@components/bottom/BottomBar.jsx";
 import RightSideBar from "@components/right/RightSideBar.jsx";
+import PositionAndLegend from "@components/rightAndBottom/PositionAndLegend.jsx";
 
 // 配置导航控件选项（JavaScript对象格式）
-// const navigationOptions = {
-//     // 启用指南针
-//     enableCompass: true,
-//     // 启用缩放控件
-//     enableZoomControls: true,
-//     // 启用距离图例
-//     enableDistanceLegend: true,
-//     // 启用罗盘环
-//     enableCompassRing: true,
-//
-//     // 自定义选项示例
-//     defaultResetView: {
-//         orientation: {
-//             heading: Cesium.Math.toRadians(0),
-//             pitch: Cesium.Math.toRadians(-90),
-//             roll: 0.0
-//         }
-//     },
-//     // 更多可用配置...
-// };
+const navigationOptions = {
+    // 启用指南针
+    enableCompass: true,
+    // 启用缩放控件
+    enableZoomControls: true,
+    // 启用距离图例
+    enableDistanceLegend: true,
+    // 启用罗盘环
+    enableCompassRing: true,
+};
 const App = () => {
     const [viewerState, setViewer] = useState(null);
     const [selectedTime, setSelectedTime] = useState('2017-05-01');
@@ -64,15 +60,24 @@ const App = () => {
     const createViewer = async () => {
         const viewer = new Viewer("cesiumContainer", {
             contextOptions: {webgl: {powerPreference: 'high-performance'}},
-
+            skyBox: new Cesium.SkyBox({
+                sources: {
+                    positiveX: px,
+                    negativeX: mx,
+                    positiveY: py,
+                    negativeY: my,
+                    positiveZ: pz,
+                    negativeZ: mz,
+                }
+            }),
             //是否显示 信息窗口
             infoBox: false,
             //是否显示 搜索框
             geocoder: true,
             //是否显示 home
-            homeButton: true,
+            homeButton: false,
             //是否显示 2d->3d
-            sceneModePicker: true,
+            sceneModePicker: false,
             //是否显示 图层选择器
             baseLayerPicker: false,
             //是否显示 帮助按钮
@@ -95,11 +100,14 @@ const App = () => {
                   tileMatrixSetID: 'w',
                   subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
                   maximumLevel: 18,
-                  credit: new Cesium.Credit('天地图')
+                  credit: new Cesium.Credit('天地图'),
+
               }),
+
               {}
             ),
         });
+
 
         viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
             url: "http://t0.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={TileMatrix}&TILEROW={TileRow}&TILECOL={TileCol}&tk=ea280c007d7d86ab4698216ac22c5b7f",
@@ -214,22 +222,16 @@ const App = () => {
 
                 {/* 顶部菜单栏*/}
                 <TopBar selectedTime={selectedTime} viewer={viewerState} />
-                {/* 左侧菜单栏*/}
-                <SideBar/>
                 <div className={styles.visualizationContainer}>
                     <div id="cesiumContainer" className={styles.cesiumContainer}/>
                 </div>
-                {/*<PositionAndLegend positionInfo={positionInfo}/>*/}
                 <Routes>
                     <Route path="/data/:date"
                            element={
                                <RightSideBar
                                    viewer={viewerState}/>
-                               // <DataRender
-                               //     viewer={viewerState}/>
                            }/>
                 </Routes>
-                <BottomBar/>
             </ConfigProvider>
         </>
     );

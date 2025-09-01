@@ -1,5 +1,5 @@
 import React from 'react';
-import {Layout, Typography, Button, theme, Space, Card} from 'antd';
+import {Layout, Typography, Button, theme, Space, Card, Select} from 'antd';
 import styles from './BottomBar.module.scss';
 // Ensure this import path is correct based on your project structure
 import WaterQualityTrend from "@components/bottom/trend/WaterQualityTrend.jsx";
@@ -224,13 +224,36 @@ const BottomBar = () => {
             style={{
                 // background: token.colorBgContainer,
                 // color: token.colorPrimary,
-                height: '250px',
+                height: '350px',
                 backgroundColor: 'rgba(0, 0, 0, 0.1)',
                 // The SCSS already has display: flex, justify-content: center, align-items: center
                 // These center the *content block* within the footer.
                 // The inner div will handle filling the height.
             }}
         >
+            <Select
+                defaultValue="5月"
+                style={{
+                    width: '6%',
+                    height: '100%',
+                    background: 'rgba(90,245,44,0.4)',
+                    color: 'pink',
+                    border: '1px solid rgba(122, 28, 123, 0.8)',
+                }}
+                dropdownStyle={{
+                    background: 'deepPink', // 下拉菜单背景颜色
+                    color: 'white', // 下拉菜单文字颜色
+                }}
+                // onChange={handleMetricChange}
+            >
+                <Select.Option value="5月">5月</Select.Option>
+                {/*<Select.Option value="溶解氧">溶解氧</Select.Option>*/}
+                {/*<Select.Option value="化学需氧量">化学需氧量</Select.Option>*/}
+                {/*<Select.Option value="无机氮">无机氮</Select.Option>*/}
+                {/*<Select.Option value="活性磷酸盐">活性磷酸盐</Select.Option>*/}
+                {/*<Select.Option value="石油类">石油类</Select.Option>*/}
+                {/*<Select.Option value="水质类别">水质类别</Select.Option>*/}
+            </Select>
             {/* This div acts as a flex container to make its children (the Space) fill its height */}
             <div style={{
                 width: '100%', // Take full width within footer padding
@@ -247,31 +270,31 @@ const BottomBar = () => {
                         width: '100%',  // 占满宽度
                     }}
                 >
-                    <Card
-                        bordered={false}
-                        headStyle={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                            color: '#ffffff',
-                            fontWeight: 'bold',
-                        }}
-                        bodyStyle={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                            color: '#ffffff',
-                            fontSize: '14px',
-                            overflow: 'hidden',
-                            padding: 0, // Remove padding to allow chart to fill completely
-                        }}
-                        style={{
-                            flex: 5, // 关键点：卡片2也占1份
-                            width: '100%', // Still useful if Space has multiple items and this one should take specific width
-                            height: '100%', // Make Card fill the parent Space item's height
-                            transition: 'transform 0.2s', // Keep original
-                            borderRadius: '8px', // Keep original
-                            // Remove marginBottom: '16px' as it prevents filling the full height
-                        }}
-                    >
-                        <WaterQualityTrend data={stackData}/>
-                    </Card>
+                    {/*<Card*/}
+                    {/*    bordered={false}*/}
+                    {/*    headStyle={{*/}
+                    {/*        backgroundColor: 'rgba(255, 255, 255, 0.2)',*/}
+                    {/*        color: '#ffffff',*/}
+                    {/*        fontWeight: 'bold',*/}
+                    {/*    }}*/}
+                    {/*    bodyStyle={{*/}
+                    {/*        backgroundColor: 'rgba(255, 255, 255, 0.1)',*/}
+                    {/*        color: '#ffffff',*/}
+                    {/*        fontSize: '14px',*/}
+                    {/*        overflow: 'hidden',*/}
+                    {/*        padding: 0, // Remove padding to allow chart to fill completely*/}
+                    {/*    }}*/}
+                    {/*    style={{*/}
+                    {/*        flex: 5, // 关键点：卡片2也占1份*/}
+                    {/*        width: '100%', // Still useful if Space has multiple items and this one should take specific width*/}
+                    {/*        height: '100%', // Make Card fill the parent Space item's height*/}
+                    {/*        transition: 'transform 0.2s', // Keep original*/}
+                    {/*        borderRadius: '8px', // Keep original*/}
+                    {/*        // Remove marginBottom: '16px' as it prevents filling the full height*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    <WaterQualityTrend data={stackData}/>*/}
+                    {/*</Card>*/}
                     <Card
                         bordered={false}
                         headStyle={{
@@ -295,8 +318,8 @@ const BottomBar = () => {
                         }}
                     >
                         <ScrollRankingBoard config={config} style={{
-                            width: '400px',
-                            height: '200px',
+                            width: '558px',
+                            height: '329px',
                         }} />
                     </Card>
 
@@ -306,34 +329,39 @@ const BottomBar = () => {
     );
 };
 const config = {
+    color: [ '#EE82EE'],
     data: [
         {
-            name: '周口',
+            name: '上海',
+            value: 101
+        },
+        {
+            name: '舟山',
+            value: 86
+        },
+        {
+            name: '崇明县',
+            value: 81
+        },
+        {
+            name: '宁德',
+            value: 75
+        },
+        {
+            name: '珠海',
+            value: 71
+        },
+        {
+            name: '宁波',
+            value: 64
+        },
+        {
+            name: '深圳',
             value: 55
         },
         {
-            name: '南阳',
-            value: 120
-        },
-        {
-            name: '西峡',
-            value: 78
-        },
-        {
-            name: '驻马店',
-            value: 66
-        },
-        {
-            name: '新乡',
-            value: 80
-        },
-        {
-            name: '信阳',
-            value: 45
-        },
-        {
-            name: '漯河',
-            value: 29
+            name: '浦东新区',
+            value: 39
         }
     ]
 };

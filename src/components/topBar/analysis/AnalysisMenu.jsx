@@ -87,23 +87,19 @@ const AnalysisMenu = ({ viewer, selectedTime }) => {
             let points = response.data.map(location => {
                 return { x: location.longitude, y: location.latitude, value: _value };
             });
-
             let cesiumHeatmap = CesiumHeatmap.create(
-                viewer,
-                {
+                viewer, {
                     west: _west,
                     south: _south,
                     east: _east,
                     north: _north
-                },
-                {
+                }, {
                     radius: 300,
                     maxOpacity: 5,
                     minOpacity: 0.5,
                     blur: 1
                 }
             );
-
             cesiumHeatmap.setWGS84Data(0, 1200, points);
         } catch (error) {
             console.error(`Error rendering heatmap for ${city}:`, error);
@@ -134,7 +130,7 @@ const AnalysisMenu = ({ viewer, selectedTime }) => {
                     borderRadius: 8,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     backgroundColor: 'rgba(7,26,1,0.6)',
-                    width: '300px',
+                    width: '800px',
                 }}>
                     <Button
                         type="text"

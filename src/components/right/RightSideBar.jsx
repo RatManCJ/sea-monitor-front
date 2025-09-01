@@ -100,8 +100,6 @@ const RightSideBar = ({viewer}) => {
                 longitude: typeof info.longitude === 'object' && info.longitude.getValue ? info.longitude.getValue() : info.longitude,
                 latitude: typeof info.latitude === 'object' && info.latitude.getValue ? info.latitude.getValue() : info.latitude,
             });
-            // 你可以根据需要自动查询详细信息
-            // handleSearch(info.site);
         });
 
     }, [date, viewer]);
@@ -207,6 +205,9 @@ const RightSideBar = ({viewer}) => {
                         <div style={{marginTop: 8, color: 'white'}}>
                             <p><strong>点位编号：</strong>{siteInfo.site}</p>
                             <p><strong>经度：</strong>{siteInfo.longitude}</p>
+                            <p><strong>海区：</strong>{siteInfo.sea}</p>
+                            <p><strong>省份：</strong>{siteInfo.province}</p>
+                            <p><strong>地市：</strong>{siteInfo.city}</p>
                             <p><strong>PH：</strong>
                                 <span style={{
                                     color:
@@ -216,7 +217,8 @@ const RightSideBar = ({viewer}) => {
                                                 ? 'orange'
                                                 : 'red'
                                 }}>
-                                    {siteInfo.ph}||一二类：7.8-8.5;三四类：6.8-8.8
+                                    {siteInfo.ph}
+                                    {/*||一二类：7.8-8.5;三四类：6.8-8.8*/}
                                 </span>
                             </p>
                             <p><strong>溶解氧：</strong>
@@ -232,7 +234,8 @@ const RightSideBar = ({viewer}) => {
                                                         ? 'red'
                                                         : 'gray'
                                 }}>
-                                    {siteInfo.dissolvedOxygen}||一类：≥6;二类：≥5;三类：≥4;四类：≥3;
+                                    {siteInfo.dissolvedOxygen}
+                                    {/*||一类：≥6;二类：≥5;三类：≥4;四类：≥3;*/}
                                 </span>
                             </p>
                             <p>
@@ -267,7 +270,8 @@ const RightSideBar = ({viewer}) => {
                                                         ? 'red'
                                                         : 'gray'
                                 }}>
-    {siteInfo.inorganicNitrogen}||一类：≤2；二类：≤3；三类：≤4；四类：≤5
+    {siteInfo.inorganicNitrogen}
+                                    {/*||一类：≤2；二类：≤3；三类：≤4；四类：≤5*/}
   </span>
                             </p>
 
@@ -283,7 +287,8 @@ const RightSideBar = ({viewer}) => {
                                                     ? 'orange'
                                                     : 'red'
                                 }}>
-    {siteInfo.activePhosphate}||一类：≤0.015；二、三类：≤0.03；四类：≤0.045
+    {siteInfo.activePhosphate}
+                                    {/*||一类：≤0.015；二、三类：≤0.03；四类：≤0.045*/}
   </span>
                             </p>
 
@@ -299,7 +304,8 @@ const RightSideBar = ({viewer}) => {
                                                     ? 'orange'
                                                     : 'red'
                                 }}>
-    {siteInfo.petroleum}||一类：≤0.05；二类：≤0.3；三类：≤0.5
+    {siteInfo.petroleum}
+                                    {/*||一类：≤0.05；二类：≤0.3；三类：≤0.5*/}
   </span>
                             </p>
                             <p><strong>水质类别：</strong>
@@ -324,7 +330,7 @@ const RightSideBar = ({viewer}) => {
             ),
         },
         {
-            title: '柱状图示例',
+            title: '各指标历年监测数据',
             icon: null,
             content: (
                 <div>
@@ -353,7 +359,7 @@ const RightSideBar = ({viewer}) => {
                     </Select>
 
                     {/* 柱状图 */}
-                    <div style={{height: '200px'}}>
+                    <div style={{height: '250px'}}>
                         <ColumnRender
                             metricData={currentChartData}
                         />

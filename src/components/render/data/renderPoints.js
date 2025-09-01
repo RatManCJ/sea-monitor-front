@@ -94,7 +94,8 @@ const renderPoints = async (selectedTime, viewer,  onPointSelect) => {
         let lastHighlighted = null;
 
         // 鼠标悬停放大
-        const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        const handler = new
+            Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
         handler.setInputAction((movement) => {
             const picked = viewer.scene.pick(movement.endPosition);
             if (Cesium.defined(picked) && picked.id && picked.id.point) {

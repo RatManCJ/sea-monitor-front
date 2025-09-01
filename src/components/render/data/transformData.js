@@ -1,3 +1,9 @@
+/**
+ * 数据转换
+ * @param data
+ * @param currentMetricData
+ * @returns {{pH: [], 溶解氧: [], 石油类: [], 化学需氧量: [], 活性磷酸盐: [], 无机氮: []}}
+ */
 export const transformData = (data, currentMetricData) => {
     const newMetricData = {
         pH: [],
